@@ -1,5 +1,8 @@
 #!/bin/sh
 
+SUBDIRECTORY_OK=yes
+. "$(git --exec-path)/git-sh-setup"
+
 grok_diff='s:^--- ./\(.*\):--- \1:p ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
 function fixup_candidates () {
@@ -21,6 +24,8 @@ if test $# -eq 1; then
     exit 0
 fi
 
+
+cd_to_toplevel
 fixup_candidates | while read sha; do
     printf "%s " "$sha"
     git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'
