@@ -3,7 +3,7 @@
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
 
-grok_diff='s:^--- ./\(.*\):--- \1:p ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
+grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p  ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
 function fixup_candidates () {
     git diff --cached -U1 | sed -n "$grok_diff" | (
@@ -12,7 +12,9 @@ function fixup_candidates () {
             if test "$offs" == '---'; then
                 file="$len"
             else
-                git blame -sl -L "$offs,+$len" HEAD -- "$file"
+                if test "$file" != '/dev/null'; then
+                    git blame -sl -L "$offs,+$len" HEAD -- "$file"
+                fi
             fi
         done
     ) | cut -d' ' -f 1 | sort -u
