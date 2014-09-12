@@ -14,12 +14,12 @@ function fixup_candidates_lines () {
             else
                 if test "$len" != '0'; then
                     if test "$file" != '/dev/null'; then
-                        git blame -sl -L "$offs,+$len" $rev_range -- "$file" | sed "s/^^//g"
+                        git blame -sl -L "$offs,+$len" $rev_range -- "$file"
                     fi
                 fi
             fi
         done
-    ) | cut -d' ' -f 1 | sort -u
+    ) | grep -v "^^" | cut -d' ' -f 1 | sort -u
 }
 
 function fixup_candidates_files () {
