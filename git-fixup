@@ -14,7 +14,7 @@ function fixup_candidates_lines () {
             else
                 if test "$len" != '0'; then
                     if test "$file" != '/dev/null'; then
-                        git blame -sl -L "$offs,+$len" HEAD -- "$file"
+                        git blame -sl -L "$offs,+$len" HEAD -- "$file" | sed "s/^^//g"
                     fi
                 fi
             fi
