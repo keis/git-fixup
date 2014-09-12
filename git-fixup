@@ -14,7 +14,7 @@ function fixup_candidates_lines () {
             else
                 if test "$len" != '0'; then
                     if test "$file" != '/dev/null'; then
-                        git blame -sl -L "$offs,+$len" HEAD -- "$file" | sed "s/^^//g"
+                        git blame -sl -L "$offs,+$len" $rev_range -- "$file" | sed "s/^^//g"
                     fi
                 fi
             fi
@@ -25,21 +25,10 @@ function fixup_candidates_lines () {
 function fixup_candidates_files () {
     git diff --cached --name-only | (
         while read file; do
-            git log -n 1 -- $file | head -1
+            git log -n 1 $rev_range -- $file | head -1
         done
     ) | cut -d' ' -f 2 | sort -u
     return
-}
-
-function is_local_sha () {
-    if test "$1" = ""; then
-        return 1
-    fi
-    if test "$local_shas" = ""; then
-        return 0
-    fi
-    echo "$local_shas" | grep -q $1
-    return $?
 }
 
 function is_lines_sha () {
@@ -64,22 +53,24 @@ fi
 
 
 cd_to_toplevel
-local_shas=`git cherry -v 2>&1`
+rev_range=`git cherry 2>&1 | head -1; exit ${PIPESTATUS[0]}`
 if test "$?" != 0; then
-    local_shas=""
+    rev_range="HEAD"
+elif test "$rev_range" = ""; then
+    exit 0
 else
-    local_shas=`echo "$local_shas" | cut -d' ' -f 2`
+    rev_range=`echo "$rev_range" | cut -d' ' -f 2`"^...HEAD"
 fi
 
 lines_shas=`fixup_candidates_lines`
 files_shas=`fixup_candidates_files`
 echo "$lines_shas" | while read sha; do
-    if is_local_sha $sha; then
+    if test "$sha" != ""; then
         print_sha $sha [L]
     fi
 done
 echo "$files_shas" | while read sha; do
-    if is_local_sha $sha && ! is_lines_sha $sha; then
+    if test "$sha" != "" && ! is_lines_sha $sha; then
         print_sha $sha [F]
     fi
 done
