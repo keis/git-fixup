@@ -5,15 +5,17 @@ SUBDIRECTORY_OK=yes
 
 grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p  ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
-function fixup_candidates () {
-    git diff --cached -U1 | sed -n "$grok_diff" | (
+function fixup_candidates_blame () {
+    git diff --cached -U0 | sed -n "$grok_diff" | (
         file=''
         while read offs len; do
             if test "$offs" == '---'; then
                 file="$len"
             else
-                if test "$file" != '/dev/null'; then
-                    git blame -sl -L "$offs,+$len" HEAD -- "$file"
+                if test "$len" != '0'; then
+                    if test "$file" != '/dev/null'; then
+                        git blame -sl -L "$offs,+$len" HEAD -- "$file"
+                    fi
                 fi
             fi
         done
@@ -28,7 +30,6 @@ fi
 
 
 cd_to_toplevel
-fixup_candidates | while read sha; do
-    printf "%s " "$sha"
-    git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'
+fixup_candidates_blame | while read sha; do
+    print_sha $sha [BLM]
 done
