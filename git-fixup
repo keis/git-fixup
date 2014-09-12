@@ -31,6 +31,17 @@ function fixup_candidates_log () {
     return
 }
 
+function is_local_sha () {
+    if test "$local_shas" = ""; then
+        return 0
+    fi
+    if test "$1" = ""; then
+        return 1
+    fi
+    echo "$local_shas" | grep -q $1
+    return $?
+}
+
 function print_sha () {
     local sha=$1
     local type=$2
@@ -48,9 +59,20 @@ fi
 
 
 cd_to_toplevel
+local_shas=`git cherry -v 2>&1`
+if test "$?" != 0; then
+    local_shas=""
+else
+    local_shas=`echo "$local_shas" | cut -d' ' -f 2`
+fi
+
 fixup_candidates_blame | while read sha; do
-    print_sha $sha [L]
+    if is_local_sha $sha; then
+        print_sha $sha [L]
+    fi
 done
 fixup_candidates_log | while read sha; do
-    print_sha $sha [F]
+    if is_local_sha $sha; then
+        print_sha $sha [F]
+    fi
 done
