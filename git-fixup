@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
