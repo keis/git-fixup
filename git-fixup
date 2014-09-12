@@ -5,7 +5,7 @@ SUBDIRECTORY_OK=yes
 
 grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p  ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
-function fixup_candidates_blame () {
+function fixup_candidates_lines () {
     git diff --cached -U1 | sed -n "$grok_diff" | (
         file=''
         while read offs len; do
@@ -22,7 +22,7 @@ function fixup_candidates_blame () {
     ) | cut -d' ' -f 1 | sort -u
 }
 
-function fixup_candidates_log () {
+function fixup_candidates_files () {
     git diff --cached --name-only | (
         while read file; do
             git log -n 1 -- $file | head -1
@@ -39,6 +39,11 @@ function is_local_sha () {
         return 1
     fi
     echo "$local_shas" | grep -q $1
+    return $?
+}
+
+function is_lines_sha () {
+    echo "$lines_shas" | grep -q $1
     return $?
 }
 
@@ -66,13 +71,15 @@ else
     local_shas=`echo "$local_shas" | cut -d' ' -f 2`
 fi
 
-fixup_candidates_blame | while read sha; do
+lines_shas=`fixup_candidates_lines`
+files_shas=`fixup_candidates_files`
+echo "$lines_shas" | while read sha; do
     if is_local_sha $sha; then
         print_sha $sha [L]
     fi
 done
-fixup_candidates_log | while read sha; do
-    if is_local_sha $sha; then
+echo "$files_shas" | while read sha; do
+    if is_local_sha $sha && ! is_lines_sha $sha; then
         print_sha $sha [F]
     fi
 done
