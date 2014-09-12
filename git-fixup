@@ -22,6 +22,24 @@ function fixup_candidates_blame () {
     ) | cut -d' ' -f 1 | sort -u
 }
 
+function fixup_candidates_log () {
+    git diff --cached --name-only | (
+        while read file; do
+            git log -n 1 -- $file | head -1
+        done
+    ) | cut -d' ' -f 2 | sort -u
+    return
+}
+
+function print_sha () {
+    local sha=$1
+    local type=$2
+    printf "%s " "$sha"
+    printf "%s " "$type"
+    echo -n `git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'`" "
+    git cat-file -p "$sha" | sed -n '/^committer/{p;q}' | sed -e "s/.*</</g" -e "s/>.*/>/g"
+}
+
 if test $# -eq 1; then
     git rev-parse --verify "$1" > /dev/null || exit 1
     git commit -m "fixup! $1";
@@ -32,4 +50,7 @@ fi
 cd_to_toplevel
 fixup_candidates_blame | while read sha; do
     print_sha $sha [BLM]
+done
+fixup_candidates_log | while read sha; do
+    print_sha $sha [LOG]
 done
