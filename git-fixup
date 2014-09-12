@@ -49,8 +49,8 @@ fi
 
 cd_to_toplevel
 fixup_candidates_blame | while read sha; do
-    print_sha $sha [BLM]
+    print_sha $sha [L]
 done
 fixup_candidates_log | while read sha; do
-    print_sha $sha [LOG]
+    print_sha $sha [F]
 done
