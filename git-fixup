@@ -1,23 +1,48 @@
-#!/bin/sh
+#!/bin/bash
 
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
 
 grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p  ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
-function fixup_candidates () {
+function fixup_candidates_lines () {
     git diff --cached -U1 | sed -n "$grok_diff" | (
         file=''
         while read offs len; do
             if test "$offs" == '---'; then
                 file="$len"
             else
-                if test "$file" != '/dev/null'; then
-                    git blame -sl -L "$offs,+$len" HEAD -- "$file"
+                if test "$len" != '0'; then
+                    if test "$file" != '/dev/null'; then
+                        git blame -sl -L "$offs,+$len" $rev_range -- "$file"
+                    fi
                 fi
             fi
         done
-    ) | cut -d' ' -f 1 | sort -u
+    ) | grep -v "^^" | cut -d' ' -f 1 | sort -u
+}
+
+function fixup_candidates_files () {
+    git diff --cached --name-only | (
+        while read file; do
+            git log -n 1 $rev_range -- $file | head -1
+        done
+    ) | cut -d' ' -f 2 | sort -u
+    return
+}
+
+function is_lines_sha () {
+    echo "$lines_shas" | grep -q $1
+    return $?
+}
+
+function print_sha () {
+    local sha=$1
+    local type=$2
+    printf "%s " "$sha"
+    printf "%s " "$type"
+    echo -n `git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'`" "
+    git cat-file -p "$sha" | sed -n '/^committer/{p;q}' | sed -e "s/.*</</g" -e "s/>.*/>/g"
 }
 
 if test $# -eq 1; then
@@ -28,7 +53,24 @@ fi
 
 
 cd_to_toplevel
-fixup_candidates | while read sha; do
-    printf "%s " "$sha"
-    git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'
+rev_range=`git rev-parse @{upstream}`
+if test "$?" != 0; then
+    rev_range="HEAD"
+elif test "$rev_range" = ""; then
+    exit 0
+else
+    rev_range=`echo "$rev_range" | cut -d' ' -f 2`"...HEAD"
+fi
+
+lines_shas=`fixup_candidates_lines`
+files_shas=`fixup_candidates_files`
+echo "$lines_shas" | while read sha; do
+    if test "$sha" != ""; then
+        print_sha $sha [L]
+    fi
+done
+echo "$files_shas" | while read sha; do
+    if test "$sha" != "" && ! is_lines_sha $sha; then
+        print_sha $sha [F]
+    fi
 done
