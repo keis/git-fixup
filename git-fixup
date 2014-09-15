@@ -26,9 +26,9 @@ function fixup_candidates_lines () {
 function fixup_candidates_files () {
     git diff --cached --name-only | (
         while read file; do
-            git log -n 1 $rev_range -- $file | head -1
+            git rev-list -n 1 $rev_range -- $file
         done
-    ) | cut -d' ' -f 2 | sort -u
+    ) | sort -u
     return
 }
 
