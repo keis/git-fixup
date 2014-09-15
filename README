@@ -18,8 +18,9 @@ https://github.com/keis/git-fixup
 Install
 -------
 
-make install
-make install-zsh
+    make install
+
+    make install-zsh
 
 -or-
 
