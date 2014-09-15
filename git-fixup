@@ -20,7 +20,7 @@ function fixup_candidates_lines () {
                 fi
             fi
         done
-    ) | grep -v "^^" | cut -d' ' -f 1
+    ) | grep -v "^^" | cut -d' ' -f 1 | sed 's/^/L /g'
 }
 
 function fixup_candidates_files () {
@@ -28,7 +28,7 @@ function fixup_candidates_files () {
         while read file; do
             git rev-list -n 1 $rev_range -- $file
         done
-    )
+    ) | sed 's/^/F /g'
 }
 
 function print_sha () {
@@ -60,8 +60,8 @@ fi
 (
     fixup_candidates_lines
     fixup_candidates_files
-) | sort -u |  while read sha; do
+) | sort -uk2 |  while read type sha; do
     if test "$sha" != ""; then
-        print_sha $sha [X]
+        print_sha $sha "[$type]"
     fi
 done
