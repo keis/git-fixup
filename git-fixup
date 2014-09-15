@@ -48,13 +48,11 @@ fi
 
 
 cd_to_toplevel
-rev_range=`git rev-parse @{upstream}`
+rev_range=`git rev-parse @{upstream} 2>/dev/null`
 if test "$?" != 0; then
     rev_range="HEAD"
-elif test "$rev_range" = ""; then
-    exit 0
 else
-    rev_range=`echo "$rev_range" | cut -d' ' -f 2`"...HEAD"
+    rev_range="${rev_range}...HEAD"
 fi
 
 (
