@@ -4,7 +4,8 @@
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
 
-grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p  ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
+grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p ;
+           s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
 function fixup_candidates_lines () {
     git diff --cached -U1 | sed -n "$grok_diff" | (
@@ -34,10 +35,9 @@ function fixup_candidates_files () {
 function print_sha () {
     local sha=$1
     local type=$2
-    printf "%s " "$sha"
-    printf "%s " "$type"
-    echo -n `git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'`" "
-    git cat-file -p "$sha" | sed -n '/^committer/{p;q}' | sed -e "s/.*</</g" -e "s/>.*/>/g"
+    printf "%s %s " "$sha" "$type"
+    git cat-file -p "$sha" | sed -n '/^committer/ {s/.*<\(.*\)>.*/<\1>/ ; h} ;
+                                     /^$/         {n ; G ; s/\n/ / ; p ; q}'
 }
 
 if test $# -eq 1; then
