@@ -4,7 +4,8 @@
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
 
-grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p  ; s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
+grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p ;
+           s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
 function fixup_candidates_lines () {
     git diff --cached -U1 | sed -n "$grok_diff" | (
@@ -20,30 +21,23 @@ function fixup_candidates_lines () {
                 fi
             fi
         done
-    ) | grep -v "^^" | cut -d' ' -f 1 | sort -u
+    ) | grep -v "^^" | cut -d' ' -f 1 | sed 's/^/L /g'
 }
 
 function fixup_candidates_files () {
     git diff --cached --name-only | (
         while read file; do
-            git log -n 1 $rev_range -- $file | head -1
+            git rev-list -n 1 $rev_range -- $file
         done
-    ) | cut -d' ' -f 2 | sort -u
-    return
-}
-
-function is_lines_sha () {
-    echo "$lines_shas" | grep -q $1
-    return $?
+    ) | sed 's/^/F /g'
 }
 
 function print_sha () {
     local sha=$1
     local type=$2
-    printf "%s " "$sha"
-    printf "%s " "$type"
-    echo -n `git cat-file -p "$sha" | sed -n '/^$/{n;p;q}'`" "
-    git cat-file -p "$sha" | sed -n '/^committer/{p;q}' | sed -e "s/.*</</g" -e "s/>.*/>/g"
+    printf "%s %s " "$sha" "$type"
+    git cat-file -p "$sha" | sed -n '/^committer/ {s/.*<\(.*\)>.*/<\1>/ ; h} ;
+                                     /^$/         {n ; G ; s/\n/ / ; p ; q}'
 }
 
 if test $# -eq 1; then
@@ -54,24 +48,18 @@ fi
 
 
 cd_to_toplevel
-rev_range=`git rev-parse @{upstream}`
+rev_range=`git rev-parse @{upstream} 2>/dev/null`
 if test "$?" != 0; then
     rev_range="HEAD"
-elif test "$rev_range" = ""; then
-    exit 0
 else
-    rev_range=`echo "$rev_range" | cut -d' ' -f 2`"...HEAD"
+    rev_range="${rev_range}...HEAD"
 fi
 
-lines_shas=`fixup_candidates_lines`
-files_shas=`fixup_candidates_files`
-echo "$lines_shas" | while read sha; do
+(
+    fixup_candidates_lines
+    fixup_candidates_files
+) | sort -uk2 |  while read type sha; do
     if test "$sha" != ""; then
-        print_sha $sha [L]
-    fi
-done
-echo "$files_shas" | while read sha; do
-    if test "$sha" != "" && ! is_lines_sha $sha; then
-        print_sha $sha [F]
+        print_sha $sha "[$type]"
     fi
 done
