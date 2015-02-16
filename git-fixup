@@ -46,6 +46,10 @@ if test $# -eq 1; then
     exit 0
 fi
 
+if git diff --cached --quiet; then
+    echo 'No staged changes. Use git add -p to add them.'
+    exit 1
+fi
 
 cd_to_toplevel
 rev_range=`git rev-parse @{upstream} 2>/dev/null`
