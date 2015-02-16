@@ -35,9 +35,10 @@ function fixup_candidates_files () {
 function print_sha () {
     local sha=$1
     local type=$2
+
     printf "%s %s " "$sha" "$type"
-    git cat-file -p "$sha" | sed -n '/^committer/ {s/.*<\(.*\)>.*/<\1>/ ; h} ;
-                                     /^$/         {n ; G ; s/\n/ / ; p ; q}'
+
+    git log --format="%s <%ae>" -n 1 "$sha"
 }
 
 if test $# -eq 1; then
