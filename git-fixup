@@ -4,9 +4,14 @@
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
 
-grok_diff='s:^--- \(a/\)*\(.*\):--- \2:p ;
+# Define a sed program that turns `git diff` output into a stream of filenames
+# and sections within those files.
+grok_diff='/^--- .*/p ;
            s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
+# Produce suggestion of commits by finding the sections of files with changes
+# staged (U1 to diff is used to give some context for when adding items to
+# lists etc) and looking up the previous commits touching those sections.
 function fixup_candidates_lines () {
     git diff --cached -U1 --no-prefix | sed -n "$grok_diff" | (
         file=''
@@ -24,6 +29,8 @@ function fixup_candidates_lines () {
     ) | grep -v "^^" | cut -d' ' -f 1 | sed 's/^/L /g'
 }
 
+# Produce suggestion of commits by taking the latest commit to each file with
+# staged changes
 function fixup_candidates_files () {
     git diff --cached --name-only | (
         while read file; do
@@ -32,6 +39,7 @@ function fixup_candidates_files () {
     ) | sed 's/^/F /g'
 }
 
+# Pretty print details of a commit
 function print_sha () {
     local sha=$1
     local type=$2
