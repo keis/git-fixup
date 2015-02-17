@@ -36,9 +36,7 @@ function print_sha () {
     local sha=$1
     local type=$2
 
-    printf "%s %s " "$sha" "$type"
-
-    git log --format="%s <%ae>" -n 1 "$sha"
+    git log --format="%H [$type] %s <%ae>" -n 1 "$sha"
 }
 
 if test $# -eq 1; then
@@ -65,6 +63,6 @@ fi
     fixup_candidates_files
 ) | sort -uk2 |  while read type sha; do
     if test "$sha" != ""; then
-        print_sha $sha "[$type]"
+        print_sha "$sha" "$type"
     fi
 done
