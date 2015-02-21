@@ -1,5 +1,4 @@
-git-fixup
-=========
+# git-fixup
 
 Fighting the copy-paste element of your rebase workflow.
 
@@ -12,11 +11,8 @@ that touched those lines/files, and displays a list for you to pick from. This
 is a convenient alternative to manually searching through the commit log and
 copy-pasting the commit hash.
 
-https://github.com/keis/git-fixup
 
-
-Install
--------
+## Install
 
     make install
 
@@ -26,9 +22,7 @@ Install
 
 Copy the program and completion script into your `$PATH` and `$fpath` respectively.
 
-
-Usage
------
+## Usage
 
 For this tool to make any sense you should enable the `rebase.autosquash` setting in the git config.
 
@@ -60,26 +54,24 @@ configuration::
     zstyle ':completion:*:*:git:*' user-commands fixup:'Create a fixup commit'
 
 
-Changes
--------
+## Changelog
 
 The chronicle of major changes and changes to behaviour of program follows, for
 a full list of changes refer to the commit history.
 
-2014-09-14
-~~~~~~~~~~
+### 2014-09-14
+
 - Use most recent commit to modified files as an additional source of fixup
   candidates
 - Commits already in upstream branch are excluded from candidates
 - Boundary commits are excluded from candidates
 
-2013-06-20
-~~~~~~~~~~
-Initial release
+### 2013-06-20
+
+- Initial release
 
 
-Authors
--------
+## Authors
 
 - Rickard Dybeck ([alde](https://github.com/alde))
 - Cristiano Giuffrida ([cgiuffr](https://github.com/cgiuffr))
