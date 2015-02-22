@@ -59,11 +59,12 @@ if git diff --cached --quiet; then
 fi
 
 cd_to_toplevel
-rev_range=`git rev-parse @{upstream} 2>/dev/null`
-if test "$?" != 0; then
+upstream=`git rev-parse @{upstream} 2>/dev/null`
+head=`git rev-parse HEAD 2>/dev/null`
+if test -z "$upstream" -o "$upstream" = "$head"; then
     rev_range="HEAD"
 else
-    rev_range="${rev_range}...HEAD"
+    rev_range="@{upstream}...HEAD"
 fi
 
 (
