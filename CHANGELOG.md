@@ -1,6 +1,6 @@
 ## Changelog
 
-### upcoming / 2015-02-24
+### 1.0.0 / 2015-02-24
 - [#13](https://github.com/keis/git-fixup/pull/13) no pager on git log please (@keis)
 - [#12](https://github.com/keis/git-fixup/pull/12) fallback to all commits when rev range is empty (@keis)
 - [#10](https://github.com/keis/git-fixup/pull/10) Update README (@fixe)
