@@ -14,6 +14,10 @@ copy-pasting the commit hash.
 
 ## Install
 
+    brew install git-fixup
+
+-or-
+
     make install
 
     make install-zsh
