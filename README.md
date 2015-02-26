@@ -60,8 +60,8 @@ configuration::
 
 ## Changelog
 
-The chronicle of major changes and changes to behaviour of program follows, for
-a full list of changes refer to the commit history.
+The chronicle of major changes and changes to behaviour of the program follows,
+for a full list of changes refer to the commit history.
 
 ### 1.0.0 / 2015-02-24
 

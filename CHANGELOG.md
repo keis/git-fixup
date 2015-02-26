@@ -1,6 +1,10 @@
 ## Changelog
 
-### 1.0.0 / 2015-02-24
+### v1.0.1 / 2015-02-26
+- [#16](https://github.com/keis/git-fixup/pull/16) When installing, create any missing parent dirs. (@MerelyAPseudonym)
+- [#15](https://github.com/keis/git-fixup/pull/15) Add brew install information to README (@nunofgs)
+
+### v1.0.0 / 2015-02-24
 - [#13](https://github.com/keis/git-fixup/pull/13) no pager on git log please (@keis)
 - [#12](https://github.com/keis/git-fixup/pull/12) fallback to all commits when rev range is empty (@keis)
 - [#10](https://github.com/keis/git-fixup/pull/10) Update README (@fixe)
