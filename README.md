@@ -11,6 +11,7 @@ that touched those lines/files, and displays a list for you to pick from. This
 is a convenient alternative to manually searching through the commit log and
 copy-pasting the commit hash.
 
+<img src="https://cloud.githubusercontent.com/assets/484559/6431298/344ded94-c023-11e4-8b82-314387ceeee3.png" alt="git fixup" width="500px" />
 
 ## Install
 
