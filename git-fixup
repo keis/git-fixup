@@ -54,7 +54,7 @@ if test $# -eq 1; then
 fi
 
 if git diff --cached --quiet; then
-    echo 'No staged changes. Use git add -p to add them.'
+    echo 'No staged changes. Use git add -p to add them.' >&2
     exit 1
 fi
 
