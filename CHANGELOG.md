@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.0.2 / 2015-04-09
+- [#22](https://github.com/keis/git-fixup/pull/22) add ISC license text (@keis)
+- [#20](https://github.com/keis/git-fixup/pull/20) redirect error message to stderr (@keis)
+- [#17](https://github.com/keis/git-fixup/pull/17) Add screenshot to README (@fixe)
+
 ### v1.0.1 / 2015-02-26
 - [#16](https://github.com/keis/git-fixup/pull/16) When installing, create any missing parent dirs. (@MerelyAPseudonym)
 - [#15](https://github.com/keis/git-fixup/pull/15) Add brew install information to README (@nunofgs)
