@@ -15,20 +15,31 @@ copy-pasting the commit hash.
 
 ## Install
 
+On OS X you can install this script with **homebrew**
+
     brew install git-fixup
 
--or-
+There is a package up on AUR for any arch linux users out there that can be
+installed using **yaourt** or a similar tool
 
+    yaourt git-fixup
+
+For most other systems (as long as they include `install` and `make`) you can
+install by cloning this repo and running make
+
+    git clone https://github.com/keis/git-fixup.git
+    cd git-fixup
     make install
     make install-zsh
 
--or-
-
-Copy the program and completion script into your `$PATH` and `$fpath` respectively.
+Or if you don't want to deal with any of that you can simply download the
+scripts in anyway you like and make sure to put the program and completion
+script into your `$PATH` and `$fpath` respectively.
 
 ## Usage
 
-For this tool to make any sense you should enable the `rebase.autosquash` setting in the git config.
+For this tool to make any sense you should enable the `rebase.autosquash`
+setting in the git config.
 
 
 ```bash
