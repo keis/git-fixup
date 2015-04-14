@@ -108,3 +108,4 @@ for a full list of changes refer to the commit history.
 - Cristiano Giuffrida ([cgiuffr](https://github.com/cgiuffr))
 - David Keijser ([keis](https://github.com/keis))
 - Tiago Ribeiro ([fixe](https://github.com/fixe))
+- Joe Shaw ([joeshaw](https://github.com/joeshaw))
