@@ -46,6 +46,17 @@ $ git fixup <ref>
 $ git rebase -i ...
 ```
 
+### Squashing
+
+`git-fixup` also supports squashing commits when you pass the `-s` or
+`--squash` command-line flag.  This is equivalent to using `git commit
+--squash <ref>`.
+
+    $ git fixup --squash <ref>
+
+Squashing gives you the opportunity to edit the commit message before
+the commits are squashed together.
+
 ## Tab completion
 
 The suggestions for the tab completion is the suggested fixup bases as

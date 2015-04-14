@@ -47,10 +47,17 @@ function print_sha () {
     git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
 }
 
+op="fixup"
+case "$1" in
+    -s|--squash)
+        op="squash"
+        shift
+        ;;
+esac
+
 if test $# -eq 1; then
-    git rev-parse --verify "$1" > /dev/null || exit 1
-    git commit -m "fixup! $1";
-    exit 0
+    git commit --$op=$1
+    exit
 fi
 
 if git diff --cached --quiet; then
