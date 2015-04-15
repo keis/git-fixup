@@ -12,4 +12,6 @@ function _fixup_target {
     compadd -l -d lines -a -- commits
 }
 
-_arguments ':commit:_fixup_target'
+_arguments -A \
+    '(-s --squash)'{-s,--squash}'[Create a squash commit rather than a fixup]' \
+    ':commit:_fixup_target'
