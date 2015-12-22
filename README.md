@@ -81,26 +81,7 @@ configuration::
 
 ## Changelog
 
-The chronicle of major changes and changes to behaviour of the program follows,
-for a full list of changes refer to the commit history.
-
-### 1.0.0 / 2015-02-24
-
-- Dubbing the script version 1.0.0
-- Refactoring
-- Ignore upstream branch when it is at the same commit as HEAD
-
-### 2014-09-14
-
-- Use most recent commit to modified files as an additional source of fixup
-  candidates
-- Commits already in upstream branch are excluded from candidates
-- Boundary commits are excluded from candidates
-
-### 2013-06-20
-
-- Initial release
-
+See [CHANGELOG.md](CHANGELOG.md)
 
 ## Authors
 

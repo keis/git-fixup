@@ -1,5 +1,10 @@
 ## Changelog
 
+### v1.1.0 / 2015-12-22
+- [#27](https://github.com/keis/git-fixup/pull/27) Exclude other fixups from recent commits (@keis)
+- [#25](https://github.com/keis/git-fixup/pull/25) update zsh completion script (@keis)
+- [#24](https://github.com/keis/git-fixup/pull/24) add support for squashing with the `-s` or `--squash` params (@joeshaw)
+
 ### v1.0.2 / 2015-04-09
 - [#22](https://github.com/keis/git-fixup/pull/22) add ISC license text (@keis)
 - [#20](https://github.com/keis/git-fixup/pull/20) redirect error message to stderr (@keis)
