@@ -2,6 +2,7 @@
 
 function _fixup_target {
     local -a lines commits
+    local expl
 
     lines=(${(f)"$(git fixup)"}) 2>&1 | read err
     if [ $#lines -eq 0 ]; then
@@ -9,7 +10,11 @@ function _fixup_target {
         return 1
     fi
     commits=(${lines[@]%% *})
-    compadd -l -d lines -a -- commits
+    _wanted commits expl 'likely commits' compadd -l -d lines -a -- commits
+
+    more=(${(f)"$(git --no-pager log @{upstream}..HEAD --format='%H %s <%ae>')"})
+    more_commits=(${more[@]%% *})
+    _wanted more-commits expl 'more commits' compadd -l -d more -a -- more_commits
 }
 
 _arguments -A \
