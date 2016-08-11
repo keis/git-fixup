@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.1.1 / 2016-08-11
+- [#31](https://github.com/keis/git-fixup/pull/31) Use DESTDIR in Makefile (@Shir0kamii)
+- [#28](https://github.com/keis/git-fixup/pull/28) Don't use symmetrical rev range (@keis)
+
 ### v1.1.0 / 2015-12-22
 - [#27](https://github.com/keis/git-fixup/pull/27) Exclude other fixups from recent commits (@keis)
 - [#25](https://github.com/keis/git-fixup/pull/25) update zsh completion script (@keis)
