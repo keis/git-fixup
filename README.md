@@ -15,14 +15,16 @@ copy-pasting the commit hash.
 
 ## Install
 
-On OS X you can install this script with **homebrew**
+On **OS X** you can install this script with /homebrew/
 
     brew install git-fixup
 
-There is a package up on AUR for any arch linux users out there that can be
-installed using **yaourt** or a similar tool
+On **Arch linux** you can install from AUR using /yaourt/ or a similar tool
 
     yaourt git-fixup
+
+On **gentoo** there is an [overlay](https://wiki.gentoo.org/wiki/Overlay) you
+can use https://github.com/Shir0kamii/shiro-overlay
 
 For most other systems (as long as they include `install` and `make`) you can
 install by cloning this repo and running make
