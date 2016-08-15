@@ -15,11 +15,11 @@ copy-pasting the commit hash.
 
 ## Install
 
-On **OS X** you can install this script with /homebrew/
+On **OS X** you can install this script with _homebrew_
 
     brew install git-fixup
 
-On **Arch linux** you can install from AUR using /yaourt/ or a similar tool
+On **Arch linux** you can install from AUR using _yaourt_ or a similar tool
 
     yaourt git-fixup
 
