@@ -35,7 +35,8 @@ function fixup_candidates_files () {
     git diff --cached --name-only | (
         while read file; do
             git rev-list $rev_range -- $file \
-                | grep -v -f <(git rev-list -E --grep='^(fixup|squash)' $rev_range -- $file )
+                | grep -v -f <(git rev-list -E --grep='^(fixup|squash)' $rev_range -- $file) \
+                | head -n1
         done
     ) | sed 's/^/F /g'
 }
