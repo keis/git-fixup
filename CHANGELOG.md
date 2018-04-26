@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.1.2 / 2018-04-26
+- [#36](https://github.com/keis/git-fixup/pull/36) Fix completion for Zsh 5.3 (@eigengrau)
+- [#34](https://github.com/keis/git-fixup/pull/34) Don’t use --invert-grep. (@mcepl)
+
 ### v1.1.1 / 2016-08-11
 - [#31](https://github.com/keis/git-fixup/pull/31) Use DESTDIR in Makefile (@Shir0kamii)
 - [#28](https://github.com/keis/git-fixup/pull/28) Don't use symmetrical rev range (@keis)
