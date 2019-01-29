@@ -70,6 +70,82 @@ $ git rebase -i ...
 Squashing gives you the opportunity to edit the commit message before
 the commits are squashed together.
 
+### The `--commit` option
+
+If you are not using [tab completion](#tab-completion), it can easily become
+tedious to use `git fixup` to list commit candidates and then copying the
+commit hash to use with `git fixup <ref>`. For those use-cases, `git-fixup`
+provides the `--commit` (or `-c`) command-line flag to make your life easier.
+All options that apply to `git fixup <rev>` also apply to `git fixup --commit`.
+
+With that option, `git fixup` expects you to select one commit from a menu and
+then it creates the fixup/squash commit for you. We provide a [default
+menu](#the-default-menu) that is intentionally very simple and with no advanced
+features. Instead of using it you can tell `git fixup` to use an external tool
+for the menu by defining a command line via either the `fixup.menu` setting in
+the git config or the `GITFIXUPMENU` environment variable (the latter overrides
+the former). Example:
+
+```bash
+# Use fzf as a menu program
+$ GITFIXUPMENU=fzf git fixup -c
+```
+
+See [External menu](#external-menu) for more details and a more advanced
+example.
+
+#### `--commit` by default
+
+If you find it convenient, you can configure `git-fixup` have the `--commit`
+option enabled by default by setting `fixup.commit` in the git config.
+Example:
+
+```bash
+# Enable --commit for all my projects
+$ git config --global fixup.commit true
+```
+
+You can use `--no-commit` for disabling for a single command.
+
+#### External menu
+
+In order to use an external tool for display the commit menu, you need to
+either define the `fixup.menu` setting in the git config or set the
+`GITFIXUPMENU` environment variable with the command for the menu. The menu
+command must receive as input the lines as the options for the user and return
+the selected line to the standard output.
+
+The following example is a fragment of a git config that makes `git fixup
+--commit` display a nice menu with [fzf](https://github.com/junegunn/fzf):
+
+```ini
+[fixup]
+    menu = fzf --height '60%' \
+                --bind 'tab:toggle-preview' \
+                --preview 'git show --color {+1}' \
+                --preview-window=up:80% \
+                --prompt 'Select commit: '
+```
+
+#### The default menu
+
+If you have not configured an external menu, the default menu is used. See the
+example below:
+
+```bash
+$ git fixup -c
+1) 500be603c66040dd8a9ca18832d6221c00e96184 [F] Add README.md <foo@bar.com>
+2) ddab3b03da529af5303531a3d4127e3663063e08 [F] Add index.js <foo@bar.com>
+Which commit should I fixup? <your-selection>
+```
+
+Here `<your-selection>` should be the number of the desired commit in the list.
+You can use `q` to abort the operation and `h` to see a help message for the
+menu.
+
+If the commit title alone is not enough for you to decide, you can use `show
+<number>` to call `git show` on the `<number>`-th commit of the menu.
+
 ## Tab completion
 
 The suggestions for the tab completion is the suggested fixup bases as
