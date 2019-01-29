@@ -50,15 +50,30 @@ function print_sha () {
 }
 
 op="fixup"
-case "$1" in
-    -s|--squash)
-        op="squash"
-        shift
-        ;;
-esac
+target=
+while test $# -gt 0; do
+    case "$1" in
+        -s|--squash)
+            op="squash"
+            shift
+            ;;
+        -*)
+            echo "Invalid option: $1" >&2
+            exit 1
+            ;;
+        *)
+            if ! test -z "$target"; then
+                echo "Pass only one ref, please." >&2
+                exit 1
+            fi
+            target="$1"
+            shift
+            ;;
+    esac
+done
 
-if test $# -eq 1; then
-    git commit --$op=$1
+if ! test -z "$target"; then
+    git commit --$op=$target
     exit
 fi
 
