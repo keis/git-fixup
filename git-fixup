@@ -49,6 +49,13 @@ function print_sha () {
     git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
 }
 
+# Call git commit
+function call_commit() {
+    local target=$1
+
+    git commit --$op=$target
+}
+
 op="fixup"
 target=
 while test $# -gt 0; do
@@ -73,7 +80,7 @@ while test $# -gt 0; do
 done
 
 if ! test -z "$target"; then
-    git commit --$op=$target
+    call_commit $target
     exit
 fi
 
