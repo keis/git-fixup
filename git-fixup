@@ -49,16 +49,94 @@ function print_sha () {
     git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
 }
 
-op="fixup"
-case "$1" in
-    -s|--squash)
-        op="squash"
-        shift
-        ;;
-esac
+# Call git commit
+function call_commit() {
+    local target=$1
 
-if test $# -eq 1; then
-    git commit --$op=$1
+    git commit --$op=$target
+}
+
+# Print list of fixup/squash candidates
+function print_candidates() {
+    (
+        fixup_candidates_lines
+        fixup_candidates_files
+    ) | sort -uk2 |  while read type sha; do
+        if test "$sha" != ""; then
+            print_sha "$sha" "$type"
+        fi
+    done
+}
+
+function fallback_menu() {
+    (
+        readarray -t options
+        IFS=$'\n'
+        PS3="Which commit should I $op? "
+        select line in "${options[@]}"; do
+            if test -z "$line"; then
+                declare -a 'args=('"$REPLY"')'
+                case ${args[0]} in
+                    quit|q)
+                        echo "Alright, no action taken." >&2
+                        break
+                        ;;
+                    show|s)
+                        idx=$((${args[1]} - 1))
+                        if test $idx -ge 0; then
+                            git show ${options[$idx]%% *} >&2
+                        fi
+                        ;;
+                    help|h)
+                        local fmt="%s\n    %s\n"
+                        printf $fmt "<n>" "$op the <n>-th commit from the list" >&2
+                        printf $fmt "s[how] <n>" "show the <n>-th commit from the list" >&2
+                        printf $fmt "q[uit]" "abort operation" >&2
+                        printf $fmt "h[elp]" "show this help message" >&2
+                        ;;
+                esac
+            else
+                echo $line
+                break
+            fi
+        done < /dev/tty
+    )
+}
+
+op="fixup"
+target=
+create_commit=$(git config --default=false --type bool fixup.commit)
+while test $# -gt 0; do
+    case "$1" in
+        -s|--squash)
+            op="squash"
+            shift
+            ;;
+        -c|--commit)
+            create_commit=true
+            shift
+            ;;
+        --no-commit)
+            create_commit=false
+            shift
+            ;;
+        -*)
+            echo "Invalid option: $1" >&2
+            exit 1
+            ;;
+        *)
+            if ! test -z "$target"; then
+                echo "Pass only one ref, please." >&2
+                exit 1
+            fi
+            target="$1"
+            shift
+            ;;
+    esac
+done
+
+if ! test -z "$target"; then
+    call_commit $target
     exit
 fi
 
@@ -76,11 +154,15 @@ else
     rev_range="@{upstream}..HEAD"
 fi
 
-(
-    fixup_candidates_lines
-    fixup_candidates_files
-) | sort -uk2 |  while read type sha; do
-    if test "$sha" != ""; then
-        print_sha "$sha" "$type"
+if test "$create_commit" == "true"; then
+    GITFIXUPMENU=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
+    if test -n "$GITFIXUPMENU"; then
+        menu="eval command $GITFIXUPMENU"
+    else
+        menu=fallback_menu
     fi
-done
+    target=$(print_candidates | $menu)
+    ! test -z "$target" && call_commit ${target%% *}
+else
+    print_candidates
+fi
