@@ -1,5 +1,8 @@
 ## Changelog
 
+### v1.2.0 / 2019-02-28
+- [#39](https://github.com/keis/git-fixup/pull/39) Add the --commit option (@guludo)
+
 ### v1.1.2 / 2018-04-26
 - [#36](https://github.com/keis/git-fixup/pull/36) Fix completion for Zsh 5.3 (@eigengrau)
 - [#34](https://github.com/keis/git-fixup/pull/34) Don’t use --invert-grep. (@mcepl)
