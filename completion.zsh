@@ -1,4 +1,5 @@
 #compdef git-fixup
+#description create a fixup commit
 
 function _fixup_target {
     local -a lines commits
