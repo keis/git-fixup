@@ -15,5 +15,5 @@ function _fixup_target {
 }
 
 _arguments -A \
-    '(-s --squash)'{-s,--squash}'[Create a squash commit rather than a fixup]' \
+    '(-s --squash)'{-s,--squash}'[create a squash commit rather than a fixup]' \
     ':commit:_fixup_target'
