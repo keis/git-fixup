@@ -1,4 +1,5 @@
 #compdef git-fixup
+#description create a fixup commit
 
 function _fixup_target {
     local -a lines commits
@@ -14,5 +15,7 @@ function _fixup_target {
 }
 
 _arguments -A \
-    '(-s --squash)'{-s,--squash}'[Create a squash commit rather than a fixup]' \
+    '(-s --squash)'{-s,--squash}'[create a squash commit rather than a fixup]' \
+    '(-c --commit --no-commit)'{-c,--commit}'[create commit]' \
+    '(-c --commit --no-commit)'--no-commit'[do not create commit]' \
     ':commit:_fixup_target'
