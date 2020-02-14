@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # git-fixup (https://github.com/keis/git-fixup)
 
 SUBDIRECTORY_OK=yes
