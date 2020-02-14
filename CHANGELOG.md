@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.3.0 / 2020-02-14
+- [#45](https://github.com/keis/git-fixup/pull/45) Use bash from PATH for brew (@glensc)
+- [#43](https://github.com/keis/git-fixup/pull/43) Updates to zsh completion (@aschrab)
+
 ### v1.2.0 / 2019-02-28
 - [#39](https://github.com/keis/git-fixup/pull/39) Add the --commit option (@guludo)
 
