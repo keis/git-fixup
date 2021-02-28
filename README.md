@@ -23,9 +23,6 @@ On **Arch linux** you can install from AUR using _yaourt_ or a similar tool
 
     yaourt git-fixup
 
-On **gentoo** there is an [overlay](https://wiki.gentoo.org/wiki/Overlay) you
-can use https://github.com/Shir0kamii/shiro-overlay
-
 For most other systems (as long as they include `install` and `make`) you can
 install by cloning this repo and running make
 
