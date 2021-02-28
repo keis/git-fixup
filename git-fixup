@@ -103,13 +103,27 @@ function fallback_menu() {
     )
 }
 
-op="fixup"
+show_menu () {
+    if test -n "$fixup_menu"; then
+        eval command $fixup_menu
+    else
+        fallback_menu
+    fi
+}
+
 target=
-create_commit=$(git config --default=false --type bool fixup.commit)
+op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
+fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
+create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
+
 while test $# -gt 0; do
     case "$1" in
         -s|--squash)
             op="squash"
+            shift
+            ;;
+        -f|--fixup)
+            op="fixup"
             shift
             ;;
         -c|--commit)
@@ -155,13 +169,7 @@ else
 fi
 
 if test "$create_commit" == "true"; then
-    GITFIXUPMENU=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
-    if test -n "$GITFIXUPMENU"; then
-        menu="eval command $GITFIXUPMENU"
-    else
-        menu=fallback_menu
-    fi
-    target=$(print_candidates | $menu)
+    target=$(print_candidates | show_menu)
     ! test -z "$target" && call_commit ${target%% *}
 else
     print_candidates
