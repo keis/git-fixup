@@ -53,7 +53,7 @@ function print_sha () {
 function call_commit() {
     local target=$1
 
-    git commit --$op=$target
+    git commit ${git_commit_args[@]} --$op=$target
 }
 
 # Print list of fixup/squash candidates
@@ -111,6 +111,7 @@ show_menu () {
     fi
 }
 
+git_commit_args=()
 target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
 fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
@@ -132,6 +133,10 @@ while test $# -gt 0; do
             ;;
         --no-commit)
             create_commit=false
+            shift
+            ;;
+        --no-verify)
+            git_commit_args+=($1)
             shift
             ;;
         -*)
