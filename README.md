@@ -37,7 +37,7 @@ script into your `$PATH` and `$fpath` respectively.
 
 ## Usage
 
-`git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [<ref>]`
+`git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify] [<ref>]`
 
 For this tool to make any sense you should enable the `rebase.autosquash`
 setting in the git config.
