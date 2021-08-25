@@ -187,10 +187,13 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 ## Authors
 
-- Rickard Dybeck ([alde](https://github.com/alde))
+The fine people who have contributed to this script in ASCIIbetical order.
+
 - Cristiano Giuffrida ([cgiuffr](https://github.com/cgiuffr))
 - David Keijser ([keis](https://github.com/keis))
-- Tiago Ribeiro ([fixe](https://github.com/fixe))
-- Joe Shaw ([joeshaw](https://github.com/joeshaw))
-- Gustavo Sousa ([guludo](https://github.com/guludo))
 - Elan Ruusamäe ([glensc](https://github.com/glensc))
+- Gustavo Sousa ([guludo](https://github.com/guludo))
+- Joe Shaw ([joeshaw](https://github.com/joeshaw))
+- Philippe ([pe](https://github.com/pe))
+- Rickard Dybeck ([alde](https://github.com/alde))
+- Tiago Ribeiro ([fixe](https://github.com/fixe))

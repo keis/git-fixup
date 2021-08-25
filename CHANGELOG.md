@@ -1,5 +1,11 @@
 ## Changelog
 
+### v1.4.0 / 2021-08-25
+- [#52](https://github.com/keis/git-fixup/pull/52) Add --no-verify option to pass to git commit (@glensc)
+- [#50](https://github.com/keis/git-fixup/pull/50) Add tab completion for the fish shell (@pe)
+- [#49](https://github.com/keis/git-fixup/pull/49) replace readarray (@pe)
+- [#47](https://github.com/keis/git-fixup/pull/47) Make the various options and config behave consistently (@keis)
+
 ### v1.3.0 / 2020-02-14
 - [#45](https://github.com/keis/git-fixup/pull/45) Use bash from PATH for brew (@glensc)
 - [#43](https://github.com/keis/git-fixup/pull/43) Updates to zsh completion (@aschrab)
@@ -26,7 +32,7 @@
 - [#17](https://github.com/keis/git-fixup/pull/17) Add screenshot to README (@fixe)
 
 ### v1.0.1 / 2015-02-26
-- [#16](https://github.com/keis/git-fixup/pull/16) When installing, create any missing parent dirs. (@MerelyAPseudonym)
+- [#16](https://github.com/keis/git-fixup/pull/16) When installing, create any missing parent dirs. (@Josh-Tilles)
 - [#15](https://github.com/keis/git-fixup/pull/15) Add brew install information to README (@nunofgs)
 
 ### v1.0.0 / 2015-02-24
