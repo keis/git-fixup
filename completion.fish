@@ -7,4 +7,5 @@ end
 complete -c git -n '__fish_git_using_command fixup' -s s -l squash -f -d 'create a squash commit rather than a fixup'
 complete -c git -n '__fish_git_using_command fixup' -s c -l commit -f -d 'show a menu to pick a commit'
 complete -c git -n '__fish_git_using_command fixup' -l no-commit -f -d 'don\'t show a menu to pick a commit'
+complete -c git -n '__fish_git_using_command fixup' -l no-verify -f -d 'bypass the pre-commit and commit-msg hooks'
 complete -c git -n '__fish_git_using_command fixup' -f -k -a '(__fish_git_fixup_target)'
