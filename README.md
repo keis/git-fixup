@@ -98,6 +98,10 @@ in the git config.
 
 Don't show the commit menu even if previously instructed to do so.
 
+### --no-verify
+
+Bypass the pre-commit and commit-msg hooks. (see `git help commit`)
+
 ## Configuration
 
 `git-fixup` uses configuration from the ENVIRONMENT or from `git config`
