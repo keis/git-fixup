@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # git-fixup (https://github.com/keis/git-fixup)
 
+OPTIONS_SPEC="\
+git fixup [options] [<ref>]
+--
+h,help     Show this help text
+s,squash   Create a squash! commit
+f,fixup    Create a fixup! commit
+c,commit   Show a menu from which to pick a commit
+no-commit  Don't show a menu to pick a commit
+no-verify  Bypass the pre-commit and commit-msg hooks
+"
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
 
@@ -121,38 +131,30 @@ while test $# -gt 0; do
     case "$1" in
         -s|--squash)
             op="squash"
-            shift
             ;;
         -f|--fixup)
             op="fixup"
-            shift
             ;;
         -c|--commit)
             create_commit=true
-            shift
             ;;
         --no-commit)
             create_commit=false
-            shift
             ;;
         --no-verify)
             git_commit_args+=($1)
-            shift
             ;;
-        -*)
-            echo "Invalid option: $1" >&2
-            exit 1
-            ;;
-        *)
-            if ! test -z "$target"; then
-                echo "Pass only one ref, please." >&2
-                exit 1
-            fi
-            target="$1"
+        --)
             shift
+            break
             ;;
     esac
+    shift
 done
+
+if test $# -gt 1; then
+    die "Pass only one ref, please"
+fi
 
 if ! test -z "$target"; then
     call_commit $target
@@ -160,8 +162,7 @@ if ! test -z "$target"; then
 fi
 
 if git diff --cached --quiet; then
-    echo 'No staged changes. Use git add -p to add them.' >&2
-    exit 1
+    die 'No staged changes. Use git add -p to add them.'
 fi
 
 cd_to_toplevel
