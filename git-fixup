@@ -4,12 +4,15 @@
 OPTIONS_SPEC="\
 git fixup [options] [<ref>]
 --
-h,help     Show this help text
-s,squash   Create a squash! commit
-f,fixup    Create a fixup! commit
-c,commit   Show a menu from which to pick a commit
-no-commit  Don't show a menu to pick a commit
-no-verify  Bypass the pre-commit and commit-msg hooks
+h,help        Show this help text
+s,squash      Create a squash! commit
+f,fixup       Create a fixup! commit
+c,commit      Show a menu from which to pick a commit
+no-commit     Don't show a menu to pick a commit
+no-verify     Bypass the pre-commit and commit-msg hooks
+b,base=rev    Use <rev> as base ancestor for candidate search
+a,autobase    Use the first ancestor branch as base for candidate search
+no-autobase   The inverse of --autobase
 "
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
@@ -126,6 +129,8 @@ target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
 fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
+autobase=${GITFIXUPAUTOBASE:-$(git config --default=false --type bool fixup.autobase)}
+base_ancestor=
 
 while test $# -gt 0; do
     case "$1" in
@@ -144,6 +149,16 @@ while test $# -gt 0; do
         --no-verify)
             git_commit_args+=($1)
             ;;
+        -a|--autobase)
+            autobase=true
+            ;;
+        --no-autobase)
+            autobase=false
+            ;;
+        -b|--base)
+            shift
+            base_ancestor="$1"
+            ;;
         --)
             shift
             break
@@ -161,17 +176,35 @@ if ! test -z "$target"; then
     exit
 fi
 
+if test -z "$base_ancestor" -a "$autobase" = "true"; then
+    base_ancestor=$(git for-each-ref \
+        --merged HEAD~1 \
+        --sort=-committerdate \
+        refs/heads/ \
+        --count 1 \
+        --format='%(objectname)' \
+    )
+    if test -z "$base_ancestor"; then
+        die "Could not find the ancestor branch"
+    fi
+fi
+
 if git diff --cached --quiet; then
     die 'No staged changes. Use git add -p to add them.'
 fi
 
 cd_to_toplevel
-upstream=`git rev-parse @{upstream} 2>/dev/null`
-head=`git rev-parse HEAD 2>/dev/null`
-if test -z "$upstream" -o "$upstream" = "$head"; then
-    rev_range="HEAD"
+
+if test -n "$base_ancestor"; then
+    rev_range="$base_ancestor..HEAD"
 else
-    rev_range="@{upstream}..HEAD"
+    upstream=`git rev-parse @{upstream} 2>/dev/null`
+    head=`git rev-parse HEAD 2>/dev/null`
+    if test -z "$upstream" -o "$upstream" = "$head"; then
+        rev_range="HEAD"
+    else
+        rev_range="@{upstream}..HEAD"
+    fi
 fi
 
 if test "$create_commit" == "true"; then

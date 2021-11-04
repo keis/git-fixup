@@ -37,7 +37,10 @@ script into your `$PATH` and `$fpath` respectively.
 
 ## Usage
 
-`git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify] [<ref>]`
+```
+git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify]
+          [-b|--base <rev>] [-a|--autobase] [<ref>]
+```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
 setting in the git config.
@@ -102,9 +105,31 @@ Don't show the commit menu even if previously instructed to do so.
 
 Bypass the pre-commit and commit-msg hooks. (see `git help commit`)
 
+### --base and --autobase
+
+The default revision range used for search for candidate commits is
+`@{upstream}..HEAD` when the current head contains an upstream branch or all
+commits reachable from `HEAD` otherwise.
+
+You can override this behavior by passing an explicit revision to use as base
+of the range via `--base <rev>` (or `-b <ref>`), which will make `git-fixup`
+look for candidates in the range `<rev>..HEAD`.
+
+You can also instruct `git-fixup` to use the closest ancestor branch as base
+by using `--autobase` (or `-a`). You can use `git config fixup.autobase true`
+if you desire that to be the default behavior (which can then be overriden
+with `--no-autobase` for specific cases).
+
 ## Configuration
 
 `git-fixup` uses configuration from the ENVIRONMENT or from `git config`
+
+### fixup.autobase
+
+Or `GITFIXUPAUTOBASE`
+
+Boolean configuration to tell `git-fixup` to implicitly use `--autobase`
+option.
 
 ### fixup.action
 
