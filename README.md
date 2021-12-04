@@ -39,7 +39,7 @@ script into your `$PATH` and `$fpath` respectively.
 
 ```
 git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify]
-          [-b|--base <rev>] [-a|--autobase] [<ref>]
+          [-b|--base <rev>] [<ref>]
 ```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
@@ -105,31 +105,33 @@ Don't show the commit menu even if previously instructed to do so.
 
 Bypass the pre-commit and commit-msg hooks. (see `git help commit`)
 
-### --base and --autobase
 
-The default revision range used for search for candidate commits is
-`@{upstream}..HEAD` when the current head contains an upstream branch or all
-commits reachable from `HEAD` otherwise.
+### --base <rev>
 
-You can override this behavior by passing an explicit revision to use as base
-of the range via `--base <rev>` (or `-b <ref>`), which will make `git-fixup`
-look for candidates in the range `<rev>..HEAD`.
+This option receives as argument the revision to be used as base commit for
+the search of fixup/squash candidates. You can use anything that resolves to a
+commit. The special value `closest` resolves to the closest ancestor branch of
+the current head.
 
-You can also instruct `git-fixup` to use the closest ancestor branch as base
-by using `--autobase` (or `-a`). You can use `git config fixup.autobase true`
-if you desire that to be the default behavior (which can then be overriden
-with `--no-autobase` for specific cases).
+If omitted, the default base commit is resolved in the following order:
+
+1. The value of the environment variable `GITFIXUPBASE` if present;
+2. The value of the configuration key `fixup.base` if present;
+3. The branch configured as upstream of the current one (i.e. `@{upstream}`)
+   if existing;
+4. Finally, the root commit (i.e. full history) if nothing of the above is
+   satisfied.
 
 ## Configuration
 
 `git-fixup` uses configuration from the ENVIRONMENT or from `git config`
 
-### fixup.autobase
+### fixup.base
 
-Or `GITFIXUPAUTOBASE`
+Or `GITFIXUPBASE`
 
-Boolean configuration to tell `git-fixup` to implicitly use `--autobase`
-option.
+The default argument for `--base`. You can set the value `closest` to make
+`git-fixup` use the closest ancestor branch by default, for example.
 
 ### fixup.action
 
