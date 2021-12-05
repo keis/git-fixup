@@ -37,7 +37,10 @@ script into your `$PATH` and `$fpath` respectively.
 
 ## Usage
 
-`git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify] [<ref>]`
+```
+git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify]
+          [-b|--base <rev>] [<ref>]
+```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
 setting in the git config.
@@ -102,9 +105,33 @@ Don't show the commit menu even if previously instructed to do so.
 
 Bypass the pre-commit and commit-msg hooks. (see `git help commit`)
 
+
+### --base <rev>
+
+This option receives as argument the revision to be used as base commit for
+the search of fixup/squash candidates. You can use anything that resolves to a
+commit. The special value `closest` resolves to the closest ancestor branch of
+the current head.
+
+If omitted, the default base commit is resolved in the following order:
+
+1. The value of the environment variable `GITFIXUPBASE` if present;
+2. The value of the configuration key `fixup.base` if present;
+3. The branch configured as upstream of the current one (i.e. `@{upstream}`)
+   if existing;
+4. Finally, the root commit (i.e. full history) if nothing of the above is
+   satisfied.
+
 ## Configuration
 
 `git-fixup` uses configuration from the ENVIRONMENT or from `git config`
+
+### fixup.base
+
+Or `GITFIXUPBASE`
+
+The default argument for `--base`. You can set the value `closest` to make
+`git-fixup` use the closest ancestor branch by default, for example.
 
 ### fixup.action
 

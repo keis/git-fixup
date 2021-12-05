@@ -4,12 +4,13 @@
 OPTIONS_SPEC="\
 git fixup [options] [<ref>]
 --
-h,help     Show this help text
-s,squash   Create a squash! commit
-f,fixup    Create a fixup! commit
-c,commit   Show a menu from which to pick a commit
-no-commit  Don't show a menu to pick a commit
-no-verify  Bypass the pre-commit and commit-msg hooks
+h,help        Show this help text
+s,squash      Create a squash! commit
+f,fixup       Create a fixup! commit
+c,commit      Show a menu from which to pick a commit
+no-commit     Don't show a menu to pick a commit
+no-verify     Bypass the pre-commit and commit-msg hooks
+b,base=rev    Use <rev> as base of the revision range for the search
 "
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
@@ -126,6 +127,7 @@ target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
 fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
+base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
 
 while test $# -gt 0; do
     case "$1" in
@@ -143,6 +145,13 @@ while test $# -gt 0; do
             ;;
         --no-verify)
             git_commit_args+=($1)
+            ;;
+        -b|--base)
+            shift
+            if test $# -eq 0; then
+                die "--base requires an argument"
+            fi
+            base="$1"
             ;;
         --)
             shift
@@ -166,12 +175,32 @@ if git diff --cached --quiet; then
 fi
 
 cd_to_toplevel
-upstream=`git rev-parse @{upstream} 2>/dev/null`
-head=`git rev-parse HEAD 2>/dev/null`
-if test -z "$upstream" -o "$upstream" = "$head"; then
-    rev_range="HEAD"
+
+if test "$base" == "closest"; then
+    base=$(git for-each-ref \
+        --merged HEAD~1 \
+        --sort=-committerdate \
+        refs/heads/ \
+        --count 1 \
+        --format='%(objectname)' \
+    )
+    if test -z "$base"; then
+        die "Could not find the ancestor branch"
+    fi
+fi
+
+if test -z "$base"; then
+    upstream=`git rev-parse @{upstream} 2>/dev/null`
+    head=`git rev-parse HEAD 2>/dev/null`
+    if test -n "$upstream" -a "$upstream" != "$head"; then
+        base="$upstream"
+    fi
+fi
+
+if test -n "$base"; then
+    rev_range="$base..HEAD"
 else
-    rev_range="@{upstream}..HEAD"
+    rev_range="HEAD"
 fi
 
 if test "$create_commit" == "true"; then
