@@ -161,6 +161,7 @@ while test $# -gt 0; do
     shift
 done
 
+target="$1"
 if test $# -gt 1; then
     die "Pass only one ref, please"
 fi
