@@ -39,11 +39,11 @@ script into your `$PATH` and `$fpath` respectively.
 
 ```
 git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify]
-          [-b|--base <rev>] [<ref>]
+          [--rebase] [-b|--base <rev>] [<ref>]
 ```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
-setting in the git config.
+setting in the git config, or use the `--rebase` option.
 
 
 ```bash
@@ -101,6 +101,21 @@ in the git config.
 
 Don't show the commit menu even if previously instructed to do so.
 
+### --rebase
+
+Call an interactive rebase right after the commit is created, to automatically apply the
+fix-up into the target commit. This is merely to avoid doing two commands one after the
+other (`git fixup && git rebase`).
+
+This simply calls `git rebase --interactive --autosquash target~1`, with the target being the
+commit to fix-up.
+
+Default rebase/no-rebase can be configured by setting [fixup.rebase](#fixuprebase)
+
+### --no-rebase
+
+Don't do a rebase even if previously instructed to do so (useful to bypass [fixup.rebase](#fixuprebase))
+
 ### --no-verify
 
 Bypass the pre-commit and commit-msg hooks. (see `git help commit`)
@@ -149,6 +164,17 @@ default.
 ```bash
 # Enable --commit for all my projects
 $ git config --global fixup.commit true
+```
+
+### fixup.rebase
+
+Or `GITFIXUPREBASE`
+
+Decides if `git rebase` should be called right after the `git commit` call.
+
+```bash
+# Enable --rebase for all my projects
+$ git config --global fixup.rebase true
 ```
 
 ### fixup.menu
