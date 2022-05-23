@@ -73,9 +73,12 @@ function call_commit() {
 function call_rebase() {
     local target=$1
 
+    # If our target-commit has a parent, we call a rebase with that
     if git rev-parse --quiet --verify $target~1^{commit}; then
         git rebase --interactive --autosquash "$target~1"
-    else
+    # If our target-commit exists but has no parents, it must be the very first commit
+    # the repo. We simply call a rebase with --root
+    elif git rev-parse --quiet --verify $target^{commit}; then
         git rebase --interactive --autosquash --root
     fi
 }
