@@ -229,11 +229,13 @@ fi
 
 if test "$create_commit" == "true"; then
     target=$(print_candidates | show_menu)
-    ! test -z "$target" && call_commit ${target%% *}
+    if test -z "$target"; then
+        exit
+    fi
+    call_commit ${target%% *}
+    if test "$rebase" == "true"; then
+        call_rebase ${target%% *}
+    fi
 else
     print_candidates
-fi
-
-if test "$rebase" == "true"; then
-    ! test -z "$target" && call_rebase ${target%% *}
 fi
