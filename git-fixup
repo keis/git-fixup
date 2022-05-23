@@ -73,9 +73,7 @@ function call_commit() {
 function call_rebase() {
     local target=$1
 
-    has_parent=`git rev-parse --quiet --verify $target~1^{commit}`
-    ret_has_parent=$?
-    if [ $ret_has_parent -eq 0 ]; then
+    if git rev-parse --quiet --verify $target~1^{commit}; then
         git rebase --interactive --autosquash "$target~1"
     else
         git rebase --interactive --autosquash --root
