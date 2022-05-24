@@ -249,6 +249,7 @@ The fine people who have contributed to this script in ASCIIbetical order.
 - Cristiano Giuffrida ([cgiuffr](https://github.com/cgiuffr))
 - David Keijser ([keis](https://github.com/keis))
 - Elan Ruusamäe ([glensc](https://github.com/glensc))
+- Federico del Mazo ([FdelMazo](https://github.com/FdelMazo))
 - Gustavo Sousa ([guludo](https://github.com/guludo))
 - Joe Shaw ([joeshaw](https://github.com/joeshaw))
 - Philippe ([pe](https://github.com/pe))

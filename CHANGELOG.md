@@ -1,5 +1,13 @@
 ## Changelog
 
+### v1.5.0 / 2022-05-24
+- [#60](https://github.com/keis/git-fixup/pull/60) Add new options to completion scripts (@keis)
+- [#59](https://github.com/keis/git-fixup/pull/59) Add `--rebase` option that calls rebase after commit (@FdelMazo)
+- [#57](https://github.com/keis/git-fixup/pull/57) Recover lost `git fixup <ref>` functionality (@FdelMazo)
+- [#56](https://github.com/keis/git-fixup/pull/56) Add --base option (#56) (@guludo)
+- [#55](https://github.com/keis/git-fixup/pull/55) Use the option parsing plumbing of git-sh-setup (@keis)
+- [#54](https://github.com/keis/git-fixup/pull/54) No-verify: doc and completion (@pe)
+
 ### v1.4.0 / 2021-08-25
 - [#52](https://github.com/keis/git-fixup/pull/52) Add --no-verify option to pass to git commit (@glensc)
 - [#50](https://github.com/keis/git-fixup/pull/50) Add tab completion for the fish shell (@pe)
