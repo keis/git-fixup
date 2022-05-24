@@ -9,6 +9,8 @@ s,squash      Create a squash! commit
 f,fixup       Create a fixup! commit
 c,commit      Show a menu from which to pick a commit
 no-commit     Don't show a menu to pick a commit
+rebase        Do a rebase right after commit
+no-rebase     Don't do a rebase after commit
 no-verify     Bypass the pre-commit and commit-msg hooks
 b,base=rev    Use <rev> as base of the revision range for the search
 "
@@ -65,6 +67,20 @@ function call_commit() {
     local target=$1
 
     git commit ${git_commit_args[@]} --$op=$target
+}
+
+# Call git rebase
+function call_rebase() {
+    local target=$1
+
+    # If our target-commit has a parent, we call a rebase with that
+    if git rev-parse --quiet --verify $target~1^{commit}; then
+        git rebase --interactive --autosquash "$target~1"
+    # If our target-commit exists but has no parents, it must be the very first commit
+    # the repo. We simply call a rebase with --root
+    elif git rev-parse --quiet --verify $target^{commit}; then
+        git rebase --interactive --autosquash --root
+    fi
 }
 
 # Print list of fixup/squash candidates
@@ -125,6 +141,7 @@ show_menu () {
 git_commit_args=()
 target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
+rebase=${GITFIXUPREBASE:-$(git config --default=false fixup.rebase)}
 fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
 base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
@@ -142,6 +159,12 @@ while test $# -gt 0; do
             ;;
         --no-commit)
             create_commit=false
+            ;;
+        --rebase)
+            rebase=true
+            ;;
+        --no-rebase)
+            rebase=false
             ;;
         --no-verify)
             git_commit_args+=($1)
@@ -168,6 +191,9 @@ fi
 
 if ! test -z "$target"; then
     call_commit $target
+    if test "$rebase" == "true"; then
+        call_rebase $target
+    fi
     exit
 fi
 
@@ -206,7 +232,13 @@ fi
 
 if test "$create_commit" == "true"; then
     target=$(print_candidates | show_menu)
-    ! test -z "$target" && call_commit ${target%% *}
+    if test -z "$target"; then
+        exit
+    fi
+    call_commit ${target%% *}
+    if test "$rebase" == "true"; then
+        call_rebase ${target%% *}
+    fi
 else
     print_candidates
 fi
