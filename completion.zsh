@@ -15,8 +15,11 @@ function _fixup_target {
 }
 
 _arguments -A \
-    '(-s --squash)'{-s,--squash}'[create a squash commit rather than a fixup]' \
-    '(-c --commit --no-commit)'{-c,--commit}'[create commit]' \
-    '(-c --commit --no-commit)'--no-commit'[do not create commit]' \
-    '(--no-verify)'--no-verify'[bypass the pre-commit and commit-msg hooks]' \
+    '(-s --squash)'{-s,--squash}'[Create a squash commit rather than a fixup]' \
+    '(-c --commit --no-commit)'{-c,--commit}'[Create a commit]' \
+    '(-c --commit --no-commit)'--no-commit"[Don't create a commit]" \
+    '(--rebase --no-rebase)'--rebase'[Do a rebase after commit]' \
+    '(--rebase --no-rebase)'--no-rebase"[Don't do a rebase after commit]" \
+    '(-b --base)'{-b,--base}+"[Use <rev> as base of the revision range for the search]":rev:__git_references \
+    '(--no-verify)'--no-verify'[Bypass the pre-commit and commit-msg hooks]' \
     ':commit:_fixup_target'
