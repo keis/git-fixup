@@ -182,7 +182,7 @@ $ git config --global fixup.rebase true
 Or `GITFIXUPMENU`
 
 Sets the command that will be used to display the commit menu. If not set
-a simple [default menu](default menu] will be used.
+a simple [default menu](the-default-menu) will be used.
 
 See [External menu](#external-menu) for more details and a more advanced
 example.
