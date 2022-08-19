@@ -21,5 +21,5 @@ _arguments -A \
     '(--rebase --no-rebase)'--rebase'[Do a rebase after commit]' \
     '(--rebase --no-rebase)'--no-rebase"[Don't do a rebase after commit]" \
     '(-b --base)'{-b,--base}+"[Use <rev> as base of the revision range for the search]":rev:__git_references \
-    '(--no-verify)'--no-verify'[Bypass the pre-commit and commit-msg hooks]' \
+    '(-n --no-verify)'{-n,--no-verify}'[Bypass the pre-commit and commit-msg hooks]' \
     ':commit:_fixup_target'

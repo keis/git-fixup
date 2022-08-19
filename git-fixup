@@ -11,7 +11,7 @@ c,commit      Show a menu from which to pick a commit
 no-commit     Don't show a menu to pick a commit
 rebase        Do a rebase right after commit
 no-rebase     Don't do a rebase after commit
-no-verify     Bypass the pre-commit and commit-msg hooks
+n,no-verify   Bypass the pre-commit and commit-msg hooks
 b,base=rev    Use <rev> as base of the revision range for the search
 "
 SUBDIRECTORY_OK=yes
@@ -166,7 +166,7 @@ while test $# -gt 0; do
         --no-rebase)
             rebase=false
             ;;
-        --no-verify)
+        -n|--no-verify)
             git_commit_args+=($1)
             ;;
         -b|--base)
