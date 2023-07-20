@@ -11,4 +11,5 @@ complete -c git-fixup -s n -l no-verify -f -d 'Bypass the pre-commit and commit-
 complete -c git-fixup -l rebase -f -d 'Do a rebase after commit'
 complete -c git-fixup -l no-rebase -f -d 'Don\'t do a rebase after commit'
 complete -c git-fixup -s b -l base -x -d 'Use <rev> as base of the revision range for the search]' -a '(__fish_git_refs)'
+complete -c git-fixup -s A -l all -x -d 'Show all candidates'
 complete -c git-fixup -f -k -a '(__fish_git_fixup_target)'

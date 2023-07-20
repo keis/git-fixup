@@ -14,6 +14,7 @@ rebase        Do a rebase right after commit
 no-rebase     Don't do a rebase after commit
 n,no-verify   Bypass the pre-commit and commit-msg hooks
 b,base=rev    Use <rev> as base of the revision range for the search
+A,all         Show all candidates
 "
 SUBDIRECTORY_OK=yes
 . "$(git --exec-path)/git-sh-setup"
@@ -55,6 +56,11 @@ function fixup_candidates_files () {
     ) | sed 's/^/F /g'
 }
 
+# Produce suggestion of all commits in $rev_range
+function fixup_candidates_all_commits () {
+	git rev-list $rev_range | sed 's/^/F /g'
+}
+
 # Pretty print details of a commit
 function print_sha () {
     local sha=$1
@@ -93,8 +99,12 @@ function call_rebase() {
 # Print list of fixup/squash candidates
 function print_candidates() {
     (
-        fixup_candidates_lines
-        fixup_candidates_files
+        if test "$show_all" == "false"; then
+            fixup_candidates_lines
+            fixup_candidates_files
+        else
+            fixup_candidates_all_commits
+        fi
     ) | sort -uk2 |  while read type sha; do
         if test "$sha" != ""; then
             print_sha "$sha" "$type"
@@ -152,6 +162,7 @@ rebase=${GITFIXUPREBASE:-$(git config --default=false fixup.rebase)}
 fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
 base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
+show_all=false
 
 while test $# -gt 0; do
     case "$1" in
@@ -185,6 +196,9 @@ while test $# -gt 0; do
                 die "--base requires an argument"
             fi
             base="$1"
+            ;;
+        -A|--all)
+            show_all=true
             ;;
         --)
             shift
