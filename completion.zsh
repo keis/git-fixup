@@ -16,6 +16,7 @@ function _fixup_target {
 
 _arguments -A \
     '(-s --squash)'{-s,--squash}'[Create a squash commit rather than a fixup]' \
+    '(-a --amend)'{-a,--amend}'[Create an amend commit rather than a fixup]' \
     '(-c --commit --no-commit)'{-c,--commit}'[Create a commit]' \
     '(-c --commit --no-commit)'--no-commit"[Don't create a commit]" \
     '(--rebase --no-rebase)'--rebase'[Do a rebase after commit]' \

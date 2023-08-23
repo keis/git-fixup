@@ -38,7 +38,7 @@ script into your `$PATH` and `$fpath` respectively.
 ## Usage
 
 ```
-git-fixup [-s|--squash] [-f|--fixup] [-c|--commit] [--no-verify]
+git-fixup [-s|--squash] [-f|--fixup] [-a|--amend] [-c|--commit] [--no-verify]
           [--rebase] [-b|--base <rev>] [<ref>]
 ```
 
@@ -75,6 +75,12 @@ Default action can be configured by setting [fixup.action](#fixupaction)
 ### -f, --fixup
 
 Instruct `git-fixup` to create `fixup!` commit (This is the default).
+
+Default action can be configured by setting [fixup.action](#fixupaction)
+
+### -a, --amend
+
+Instruct `git-fixup` to create an `amend!` commit.
 
 Default action can be configured by setting [fixup.action](#fixupaction)
 

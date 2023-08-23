@@ -7,6 +7,7 @@ git fixup [options] [<ref>]
 h,help        Show this help text
 s,squash      Create a squash! commit
 f,fixup       Create a fixup! commit
+a,amend       Create an amend! commit
 c,commit      Show a menu from which to pick a commit
 no-commit     Don't show a menu to pick a commit
 rebase        Do a rebase right after commit
@@ -64,9 +65,15 @@ function print_sha () {
 
 # Call git commit
 function call_commit() {
+    local flag=$op
     local target=$1
 
-    git commit ${git_commit_args[@]} --$op=$target
+    if test "$op" == "amend"; then
+        flag=fixup
+        target="amend:$target"
+    fi
+
+    git commit ${git_commit_args[@]} --$flag=$target
 }
 
 # Call git rebase
@@ -153,6 +160,9 @@ while test $# -gt 0; do
             ;;
         -f|--fixup)
             op="fixup"
+            ;;
+        -a|--amend)
+            op="amend"
             ;;
         -c|--commit)
             create_commit=true
