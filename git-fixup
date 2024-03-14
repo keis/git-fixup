@@ -79,7 +79,7 @@ function call_commit() {
         target="amend:$target"
     fi
 
-    git commit ${git_commit_args[@]} --$flag=$target
+    git commit ${git_commit_args[@]} --$flag=$target || die
 }
 
 # Call git rebase
