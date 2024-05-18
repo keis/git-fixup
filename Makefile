@@ -8,4 +8,4 @@ install:
 
 install-zsh:
 	${INSTALL} -d ${DESTDIR}${INSTALLDIR}/share/zsh/site-functions
-	${INSTALL} -m755 completion.zsh ${DESTDIR}${INSTALLDIR}/share/zsh/site-functions/_git-fixup
+	${INSTALL} -m644 completion.zsh ${DESTDIR}${INSTALLDIR}/share/zsh/site-functions/_git-fixup
