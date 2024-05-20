@@ -1,5 +1,15 @@
 ## Changelog
 
+### v1.6.0 / 2024-05-20
+- [#71](https://github.com/keis/git-fixup/pull/71) Install zsh completion with mode 644, add `install-fish` target (@mattst88)
+- [#70](https://github.com/keis/git-fixup/pull/70) Fail script if git-commit fails (@keis)
+- [#66](https://github.com/keis/git-fixup/pull/66) Add --all option (@jerome-reybert-tiempo)
+- [#67](https://github.com/keis/git-fixup/pull/67) Add --amend option (@guludo)
+- [#64](https://github.com/keis/git-fixup/pull/64) Fix tab completion for revisions in base parameter (@pe)
+- [#63](https://github.com/keis/git-fixup/pull/63) Remove filenames in tab-completion in fish (@pe)
+- [#62](https://github.com/keis/git-fixup/pull/62) Add short option -n for --no-verify (@bbannier)
+- [#61](https://github.com/keis/git-fixup/pull/61) Fix default menu markdown link (@glensc)
+
 ### v1.5.0 / 2022-05-24
 - [#60](https://github.com/keis/git-fixup/pull/60) Add new options to completion scripts (@keis)
 - [#59](https://github.com/keis/git-fixup/pull/59) Add `--rebase` option that calls rebase after commit (@FdelMazo)
