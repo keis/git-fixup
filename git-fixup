@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/sh
+# shellcheck disable=SC2059
 # git-fixup (https://github.com/keis/git-fixup)
 # We cannot set -u, because included git libraries don't support it.
 set -e
@@ -29,10 +30,13 @@ SUBDIRECTORY_OK=yes
 grok_diff='/^--- .*/p ;
            s/^@@ -\([0-9]*\),\([0-9]*\).*/\1 \2/p'
 
+# EOL in the POSIX compatible way
+NL="$(printf '\nx')"; NL="${NL%x}"
+
 # Produce suggestion of commits by finding the sections of files with changes
 # staged (U1 to diff is used to give some context for when adding items to
 # lists etc) and looking up the previous commits touching those sections.
-function fixup_candidates_lines () {
+fixup_candidates_lines () {
     git diff --cached -U1 --no-prefix | sed -n "$grok_diff" | (
         file=''
         while read -r offs len ; do
@@ -51,7 +55,7 @@ function fixup_candidates_lines () {
 
 # Produce suggestion of commits by taking the latest commit to each file with
 # staged changes
-function fixup_candidates_files () {
+fixup_candidates_files () {
     git diff --cached --name-only | (
         while read -r file; do
             git rev-list -n 1 -E --invert-grep --grep='^(fixup|squash)' "$rev_range" -- "$file"
@@ -60,22 +64,23 @@ function fixup_candidates_files () {
 }
 
 # Produce suggestion of all commits in $rev_range
-function fixup_candidates_all_commits () {
+fixup_candidates_all_commits () {
 	git rev-list "$rev_range" | sed 's/^/F /g'
 }
 
 # Pretty print details of a commit
-function print_sha () {
-    local sha=$1
-    local type=$2
+print_sha () {
+    sha=$1
+    type=$2
 
     git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
 }
 
 # Call git commit
-function call_commit() {
-    local flag=$op
-    local target=$1
+call_commit() {
+    set -x
+    flag=$op
+    target=$1
 
     if [ "$op" = "amend" ] ; then
         flag=fixup
@@ -83,12 +88,12 @@ function call_commit() {
     fi
 
     # shellcheck disable=SC2086
-    git commit "${git_commit_args[@]}" "--$flag=$target" || die
+    git commit ${git_commit_args} "--$flag=$target" || die
 }
 
 # Call git rebase
-function call_rebase() {
-    local target=$1
+call_rebase() {
+    target=$1
 
     # If our target-commit has a parent, we call a rebase with that
     # shellcheck disable=SC1083
@@ -102,7 +107,7 @@ function call_rebase() {
 }
 
 # Print list of fixup/squash candidates
-function print_candidates() {
+print_candidates() {
     (
         if [ "$show_all" = "false" ] ; then
             fixup_candidates_lines
@@ -110,34 +115,45 @@ function print_candidates() {
         else
             fixup_candidates_all_commits
         fi
-    ) | sort -uk2 |  while read -r type sha; do
+    ) | sort -uk2 |  while read -r type sha ; do
         if [ -n "$sha" ] ; then
             print_sha "$sha" "$type"
         fi
     done
 }
 
-function fallback_menu() {
+fallback_menu() {
     (
-        IFS=$'\n'
-        read -d '' -ra options
-        PS3="Which commit should I $op? "
-        select line in "${options[@]}"; do
-            if [ -z "$line" ] ; then
-                declare -a args=("$REPLY")
-                case ${args[0]} in
+        IFS="$NL"
+        counter=0
+        TMPINPUT="$(mktemp --tmpdir gitfixup-menu-XXXX)"
+        trap 'rm -f "$TMPINPUT"' EXIT
+        cat >"$TMPINPUT"
+
+        while read -r line ; do
+            counter=$((counter + 1))
+            printf "%d) %s\n" $counter "$line" >&2
+        done < "$TMPINPUT"
+        printf "Which commit should I fixup? " >&2
+        while read -r REPLY ; do
+            if ( printf "%s\n" "$REPLY" | grep -q "^[0-9]\+$" ) && [ "$REPLY" -le "$counter" ] ; then
+                printf "%s\n" "$(sed -n -e "${REPLY}p" "$TMPINPUT")"
+                break
+            else
+                args="${REPLY%% *}"
+                case ${args} in
                     quit|q)
                         echo "Alright, no action taken." >&2
                         break
                         ;;
                     show|s)
-                        idx=$((args[1] - 1))
+                        idx="${REPLY#"$args" *}"
                         if [ "$idx" -ge 0 ] ; then
-                            git show "${options[$idx]%% *}" >&2
+                            git show "$(awk 'FNR == '"${idx}"' {print $1}' "$TMPINPUT")" >&2
                         fi
                         ;;
                     help|h)
-                        local fmt="%s\n    %s\n"
+                        fmt="%s\n    %s\n"
                         # shellcheck disable=SC2059
                         printf "$fmt" "<n>" "$op the <n>-th commit from the list" >&2
                         # shellcheck disable=SC2059
@@ -148,9 +164,6 @@ function fallback_menu() {
                         printf "$fmt" "h[elp]" "show this help message" >&2
                         ;;
                 esac
-            else
-                echo "$line"
-                break
             fi
         done < /dev/tty
     )
@@ -164,7 +177,7 @@ show_menu () {
     fi
 }
 
-git_commit_args=()
+git_commit_args=""
 target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
 rebase=${GITFIXUPREBASE:-$(git config --default=false fixup.rebase)}
@@ -197,7 +210,7 @@ while [ $# -gt 0 ] ; do
             rebase=false
             ;;
         -n|--no-verify)
-            git_commit_args+=("$1")
+            git_commit_args="$git_commit_args $1"
             ;;
         -b|--base)
             shift
