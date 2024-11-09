@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # git-fixup (https://github.com/keis/git-fixup)
+# We cannot set -u, because included git libraries don't support it.
+set -e
 
+# shellcheck disable=SC2034
 OPTIONS_SPEC="\
 git fixup [options] [<ref>]
 --
@@ -16,7 +19,9 @@ n,no-verify   Bypass the pre-commit and commit-msg hooks
 b,base=rev    Use <rev> as base of the revision range for the search
 A,all         Show all candidates
 "
+# shellcheck disable=SC2034
 SUBDIRECTORY_OK=yes
+# shellcheck disable=SC1091
 . "$(git --exec-path)/git-sh-setup"
 
 # Define a sed program that turns `git diff` output into a stream of filenames
@@ -30,13 +35,13 @@ grok_diff='/^--- .*/p ;
 function fixup_candidates_lines () {
     git diff --cached -U1 --no-prefix | sed -n "$grok_diff" | (
         file=''
-        while read offs len; do
-            if test "$offs" == '---'; then
+        while read -r offs len ; do
+            if [ "$offs" = '---' ] ; then
                 file="$len"
             else
-                if test "$len" != '0'; then
-                    if test "$file" != '/dev/null'; then
-                        git blame -sl -L "$offs,+$len" $rev_range -- "$file"
+                if [ "$len" != '0' ] ; then
+                    if [ "$file" != '/dev/null' ] ; then
+                        git blame -sl -L "$offs,+$len" "$rev_range" -- "$file"
                     fi
                 fi
             fi
@@ -48,9 +53,9 @@ function fixup_candidates_lines () {
 # staged changes
 function fixup_candidates_files () {
     git diff --cached --name-only | (
-        while read file; do
-            git rev-list $rev_range -- $file \
-                | grep -v -f <(git rev-list -E --grep='^(fixup|squash)' $rev_range -- $file) \
+        while read -r file; do
+            git rev-list "$rev_range" -- "$file" \
+                | grep -v -f <(git rev-list -E --grep='^(fixup|squash)' "$rev_range" -- "$file") \
                 | head -n1
         done
     ) | sed 's/^/F /g'
@@ -58,7 +63,7 @@ function fixup_candidates_files () {
 
 # Produce suggestion of all commits in $rev_range
 function fixup_candidates_all_commits () {
-	git rev-list $rev_range | sed 's/^/F /g'
+	git rev-list "$rev_range" | sed 's/^/F /g'
 }
 
 # Pretty print details of a commit
@@ -74,12 +79,13 @@ function call_commit() {
     local flag=$op
     local target=$1
 
-    if test "$op" == "amend"; then
+    if [ "$op" = "amend" ] ; then
         flag=fixup
         target="amend:$target"
     fi
 
-    git commit ${git_commit_args[@]} --$flag=$target || die
+    # shellcheck disable=SC2086
+    git commit "${git_commit_args[@]}" "--$flag=$target" || die
 }
 
 # Call git rebase
@@ -87,11 +93,12 @@ function call_rebase() {
     local target=$1
 
     # If our target-commit has a parent, we call a rebase with that
-    if git rev-parse --quiet --verify $target~1^{commit}; then
+    # shellcheck disable=SC1083
+    if git rev-parse --quiet --verify "$target"~1^{commit} ; then
         git rebase --interactive --autosquash "$target~1"
     # If our target-commit exists but has no parents, it must be the very first commit
     # the repo. We simply call a rebase with --root
-    elif git rev-parse --quiet --verify $target^{commit}; then
+    elif git rev-parse --quiet --verify "$target"^{commit} ; then
         git rebase --interactive --autosquash --root
     fi
 }
@@ -99,14 +106,14 @@ function call_rebase() {
 # Print list of fixup/squash candidates
 function print_candidates() {
     (
-        if test "$show_all" == "false"; then
+        if [ "$show_all" = "false" ] ; then
             fixup_candidates_lines
             fixup_candidates_files
         else
             fixup_candidates_all_commits
         fi
-    ) | sort -uk2 |  while read type sha; do
-        if test "$sha" != ""; then
+    ) | sort -uk2 |  while read -r type sha; do
+        if [ -n "$sha" ] ; then
             print_sha "$sha" "$type"
         fi
     done
@@ -118,29 +125,29 @@ function fallback_menu() {
         read -d '' -ra options
         PS3="Which commit should I $op? "
         select line in "${options[@]}"; do
-            if test -z "$line"; then
-                declare -a 'args=('"$REPLY"')'
+            if [ -z "$line" ] ; then
+                declare -a args=("$REPLY")
                 case ${args[0]} in
                     quit|q)
                         echo "Alright, no action taken." >&2
                         break
                         ;;
                     show|s)
-                        idx=$((${args[1]} - 1))
-                        if test $idx -ge 0; then
-                            git show ${options[$idx]%% *} >&2
+                        idx=$((args[1] - 1))
+                        if [ "$idx" -ge 0 ] ; then
+                            git show "${options[$idx]%% *}" >&2
                         fi
                         ;;
                     help|h)
                         local fmt="%s\n    %s\n"
-                        printf $fmt "<n>" "$op the <n>-th commit from the list" >&2
-                        printf $fmt "s[how] <n>" "show the <n>-th commit from the list" >&2
-                        printf $fmt "q[uit]" "abort operation" >&2
-                        printf $fmt "h[elp]" "show this help message" >&2
+                        printf "$fmt" "<n>" "$op the <n>-th commit from the list" >&2
+                        printf "$fmt" "s[how] <n>" "show the <n>-th commit from the list" >&2
+                        printf "$fmt" "q[uit]" "abort operation" >&2
+                        printf "$fmt" "h[elp]" "show this help message" >&2
                         ;;
                 esac
             else
-                echo $line
+                echo "$line"
                 break
             fi
         done < /dev/tty
@@ -148,8 +155,8 @@ function fallback_menu() {
 }
 
 show_menu () {
-    if test -n "$fixup_menu"; then
-        eval command $fixup_menu
+    if [ -n "$fixup_menu" ] ; then
+        eval command "$fixup_menu"
     else
         fallback_menu
     fi
@@ -164,7 +171,7 @@ create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.c
 base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
 show_all=false
 
-while test $# -gt 0; do
+while [ $# -gt 0 ] ; do
     case "$1" in
         -s|--squash)
             op="squash"
@@ -188,11 +195,11 @@ while test $# -gt 0; do
             rebase=false
             ;;
         -n|--no-verify)
-            git_commit_args+=($1)
+            git_commit_args+=("$1")
             ;;
         -b|--base)
             shift
-            if test $# -eq 0; then
+            if [ $# -eq 0 ] ; then
                 die "--base requires an argument"
             fi
             base="$1"
@@ -209,25 +216,25 @@ while test $# -gt 0; do
 done
 
 target="$1"
-if test $# -gt 1; then
+if [ $# -gt 1 ] ; then
     die "Pass only one ref, please"
 fi
 
-if ! test -z "$target"; then
-    call_commit $target
-    if test "$rebase" == "true"; then
-        call_rebase $target
+if [ -n "$target" ] ; then
+    call_commit "$target"
+    if [ "$rebase" = "true" ] ; then
+        call_rebase "$target"
     fi
     exit
 fi
 
-if git diff --cached --quiet; then
+if git diff --cached --quiet ; then
     die 'No staged changes. Use git add -p to add them.'
 fi
 
 cd_to_toplevel
 
-if test "$base" == "closest"; then
+if [ "$base" = "closest" ] ; then
     base=$(git for-each-ref \
         --merged HEAD~1 \
         --sort=-committerdate \
@@ -235,33 +242,33 @@ if test "$base" == "closest"; then
         --count 1 \
         --format='%(objectname)' \
     )
-    if test -z "$base"; then
+    if [ -z "$base" ] ; then
         die "Could not find the ancestor branch"
     fi
 fi
 
-if test -z "$base"; then
-    upstream=`git rev-parse @{upstream} 2>/dev/null`
-    head=`git rev-parse HEAD 2>/dev/null`
-    if test -n "$upstream" -a "$upstream" != "$head"; then
+if [ -z "$base" ] ; then
+    upstream=$(git rev-parse "@{upstream}" 2>/dev/null)
+    head=$(git rev-parse HEAD 2>/dev/null)
+    if [ -n "$upstream" ] && [ "$upstream" != "$head" ] ; then
         base="$upstream"
     fi
 fi
 
-if test -n "$base"; then
+if [ -n "$base" ] ; then
     rev_range="$base..HEAD"
 else
     rev_range="HEAD"
 fi
 
-if test "$create_commit" == "true"; then
+if [ "$create_commit" = "true" ] ; then
     target=$(print_candidates | show_menu)
-    if test -z "$target"; then
+    if [ -z "$target" ] ; then
         exit
     fi
-    call_commit ${target%% *}
-    if test "$rebase" == "true"; then
-        call_rebase ${target%% *}
+    call_commit "${target%% *}"
+    if [ "$rebase" = "true" ] ; then
+        call_rebase "${target%% *}"
     fi
 else
     print_candidates
