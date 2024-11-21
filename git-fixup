@@ -33,6 +33,11 @@ grok_diff='/^--- .*/p ;
 # staged (U1 to diff is used to give some context for when adding items to
 # lists etc) and looking up the previous commits touching those sections.
 function fixup_candidates_lines () {
+    local saved_ifs="$IFS"
+    local IFS=$'\0'
+    local changed_files=($(git diff --cached --name-only -z | head -c-1))
+    IFS="$saved_ifs"
+
     git diff --cached -U1 --no-prefix | sed -n "$grok_diff" | (
         file=''
         while read -r offs len ; do
@@ -46,7 +51,9 @@ function fixup_candidates_lines () {
                 fi
             fi
         done
-    ) | grep -v "^^" | cut -d' ' -f 1 | sed 's/^/L /g'
+    ) | grep -v "^^" | cut -d' ' -f 1 \
+      | grep -v -f <(git rev-list -E --grep='^(fixup|squash)' $rev_range -- "${changed_files[@]}") \
+      | sed 's/^/L /g'
 }
 
 # Produce suggestion of commits by taking the latest commit to each file with
