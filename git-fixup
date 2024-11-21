@@ -138,9 +138,13 @@ function fallback_menu() {
                         ;;
                     help|h)
                         local fmt="%s\n    %s\n"
+                        # shellcheck disable=SC2059
                         printf "$fmt" "<n>" "$op the <n>-th commit from the list" >&2
+                        # shellcheck disable=SC2059
                         printf "$fmt" "s[how] <n>" "show the <n>-th commit from the list" >&2
+                        # shellcheck disable=SC2059
                         printf "$fmt" "q[uit]" "abort operation" >&2
+                        # shellcheck disable=SC2059
                         printf "$fmt" "h[elp]" "show this help message" >&2
                         ;;
                 esac
