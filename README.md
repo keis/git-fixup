@@ -39,7 +39,7 @@ script into your `$PATH` and `$fpath` respectively.
 
 ```
 git-fixup [-s|--squash] [-f|--fixup] [-a|--amend] [-c|--commit] [--no-verify]
-          [--rebase] [-b|--base <rev>] [<ref>]
+          [--rebase] [-b|--base <rev>] [-S|--sort] [-r|--reverse] [<ref>]
 ```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
@@ -142,6 +142,15 @@ If omitted, the default base commit is resolved in the following order:
    if existing;
 4. Finally, the root commit (i.e. full history) if nothing of the above is
    satisfied.
+
+### --sort
+
+Sorts the commits by author time ascending showing the oldest commit at index 1
+and the newest at the last index.
+
+### --reverse
+
+Reverses the sort order.
 
 ## Configuration
 

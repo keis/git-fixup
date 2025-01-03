@@ -18,6 +18,8 @@ no-rebase     Don't do a rebase after commit
 n,no-verify   Bypass the pre-commit and commit-msg hooks
 b,base=rev    Use <rev> as base of the revision range for the search
 A,all         Show all candidates
+S,sort        Sort commits by time, newest first
+r,reverse     Reverse the sort
 "
 # shellcheck disable=SC2034
 SUBDIRECTORY_OK=yes
@@ -69,7 +71,11 @@ print_sha () {
     local sha=$1
     local type=$2
 
-    git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
+    if [ "$sort_by_time" = "true" ]; then
+        git --no-pager log --format="%ai %H [$type] %s <%ae>" -n 1 "$sha"
+    else
+        git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
+    fi
 }
 
 # Call git commit
@@ -164,6 +170,18 @@ show_menu () {
     fi
 }
 
+cut_time() {
+    awk '{print $4" "$5" "$6" "$7}'
+}
+
+sort_commits () {
+    if [ "$sort_by_time" = "true" ]; then
+        sort -k1 $sort_flags | cut_time
+    else
+        awk '{print $0}'
+    fi
+}
+
 git_commit_args=()
 target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
@@ -172,6 +190,8 @@ fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
 base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
 show_all=false
+sort_by_time=false
+sort_flags=""
 
 while test $# -gt 0; do
     case "$1" in
@@ -208,6 +228,12 @@ while test $# -gt 0; do
             ;;
         -A|--all)
             show_all=true
+            ;;
+        -S|--sort)
+            sort_by_time=true
+            ;;
+        -r|--reverse)
+            sort_flags="-r"
             ;;
         --)
             shift
@@ -264,7 +290,7 @@ else
 fi
 
 if test "$create_commit" = "true"; then
-    target=$(print_candidates | show_menu)
+    target=$(print_candidates | sort_commits | show_menu)
     if test -z "$target"; then
         exit
     fi
@@ -273,5 +299,5 @@ if test "$create_commit" = "true"; then
         call_rebase "${target%% *}"
     fi
 else
-    print_candidates
+    print_candidates | sort_commits
 fi
