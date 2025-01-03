@@ -39,7 +39,8 @@ script into your `$PATH` and `$fpath` respectively.
 
 ```
 git-fixup [-s|--squash] [-f|--fixup] [-a|--amend] [-c|--commit] [--no-verify]
-          [--rebase] [-b|--base <rev>] [-S|--sort] [-r|--reverse] [<ref>]
+          [--rebase] [-b|--base <rev>] [-S|--sort] [-r|--reverse]
+          [-t|--with-time] [<ref>]
 ```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
@@ -152,6 +153,10 @@ and the newest at the last index.
 
 Reverses the sort order.
 
+### --with-time
+
+Shows the commits in the menu with time in git's ISO 8601-like format (`%ai`).
+
 ## Configuration
 
 `git-fixup` uses configuration from the ENVIRONMENT or from `git config`
@@ -233,6 +238,9 @@ The following example is a fragment of a git config that makes `git fixup
                 --preview-window=up:80% \
                 --prompt 'Select commit: '
 ```
+
+If you want to use fzf's preview when showing the time, replace the `{+1}` with
+a `{+4}` in the snippet above.
 
 ## The default menu
 
