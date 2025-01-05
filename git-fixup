@@ -70,7 +70,7 @@ print_sha () {
     local sha=$1
     local type=$2
 
-    git --no-pager log --format="%H %ai [$type] %s <%ae>" -n 1 "$sha"
+    git --no-pager log --format="%h %ai [$type] %s <%ae>" -n 1 "$sha"
 }
 
 # Call git commit
