@@ -39,8 +39,7 @@ script into your `$PATH` and `$fpath` respectively.
 
 ```
 git-fixup [-s|--squash] [-f|--fixup] [-a|--amend] [-c|--commit] [--no-verify]
-          [--rebase] [-b|--base <rev>] [-S|--sort] [-r|--reverse]
-          [-t|--with-time] [<ref>]
+          [--rebase] [-b|--base <rev>] [-r|--reverse] [<ref>]
 ```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
@@ -144,18 +143,9 @@ If omitted, the default base commit is resolved in the following order:
 4. Finally, the root commit (i.e. full history) if nothing of the above is
    satisfied.
 
-### --sort
-
-Sorts the commits by author time ascending showing the oldest commit at index 1
-and the newest at the last index.
-
 ### --reverse
 
-Reverses the sort order.
-
-### --with-time
-
-Shows the commits in the menu with time in git's ISO 8601-like format (`%ai`).
+Commits are sorted by time. `-r` reverses the sort order.
 
 ## Configuration
 
@@ -207,6 +197,20 @@ a simple [default menu](the-default-menu) will be used.
 See [External menu](#external-menu) for more details and a more advanced
 example.
 
+### fixup.additionalSortFlags
+
+Or `GITFIXUPADDITIONALSORTFLAGS`
+
+Sets the flags that are passed to sort in addition to the default sort flags
+that enable sorting by time.
+
+For example,
+
+```bash
+# Always sort the commits by time reversed
+$ git config --global fixup.additionalSortFlags '-r'
+```
+
 ## Tab completion
 
 Tab completion for zsh/fish is implemented. The suggestions for the tab completion
@@ -238,9 +242,6 @@ The following example is a fragment of a git config that makes `git fixup
                 --preview-window=up:80% \
                 --prompt 'Select commit: '
 ```
-
-If you want to use fzf's preview when showing the time, replace the `{+1}` with
-a `{+4}` in the snippet above.
 
 ## The default menu
 
