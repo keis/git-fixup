@@ -39,7 +39,7 @@ script into your `$PATH` and `$fpath` respectively.
 
 ```
 git-fixup [-s|--squash] [-f|--fixup] [-a|--amend] [-c|--commit] [--no-verify]
-          [--rebase] [-b|--base <rev>] [<ref>]
+          [--rebase] [-b|--base <rev>] [-r|--reverse] [<ref>]
 ```
 
 For this tool to make any sense you should enable the `rebase.autosquash`
@@ -143,6 +143,10 @@ If omitted, the default base commit is resolved in the following order:
 4. Finally, the root commit (i.e. full history) if nothing of the above is
    satisfied.
 
+### --reverse
+
+Commits are sorted by time. `-r` reverses the sort order.
+
 ## Configuration
 
 `git-fixup` uses configuration from the ENVIRONMENT or from `git config`
@@ -192,6 +196,20 @@ a simple [default menu](the-default-menu) will be used.
 
 See [External menu](#external-menu) for more details and a more advanced
 example.
+
+### fixup.additionalSortFlags
+
+Or `GITFIXUPADDITIONALSORTFLAGS`
+
+Sets the flags that are passed to sort in addition to the default sort flags
+that enable sorting by time.
+
+For example,
+
+```bash
+# Always sort the commits by time reversed
+$ git config --global fixup.additionalSortFlags '-r'
+```
 
 ## Tab completion
 

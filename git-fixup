@@ -18,6 +18,7 @@ no-rebase     Don't do a rebase after commit
 n,no-verify   Bypass the pre-commit and commit-msg hooks
 b,base=rev    Use <rev> as base of the revision range for the search
 A,all         Show all candidates
+r,reverse     Reverse the sort
 "
 # shellcheck disable=SC2034
 SUBDIRECTORY_OK=yes
@@ -69,7 +70,7 @@ print_sha () {
     local sha=$1
     local type=$2
 
-    git --no-pager log --format="%H [$type] %s <%ae>" -n 1 "$sha"
+    git --no-pager log --format="%h %ai [$type] %s <%ae>" -n 1 "$sha"
 }
 
 # Call git commit
@@ -164,6 +165,11 @@ show_menu () {
     fi
 }
 
+sort_commits () {
+    # shellcheck disable=SC2086
+    sort $sort_flags $additional_sort_flags
+}
+
 git_commit_args=()
 target=
 op=${GITFIXUPACTION:-$(git config --default=fixup fixup.action)}
@@ -172,7 +178,8 @@ fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
 base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
 show_all=false
-
+sort_flags="-k2 -k3 -k4" # default flags to sort by time (eg 2025-01-03 10:04:43 +0100, hence 3 fields)
+additional_sort_flags=${GITFIXUPADDITIONALSORTFLAGS:-$(git config --default="" fixup.additionalSortFlags)}
 while test $# -gt 0; do
     case "$1" in
         -s|--squash)
@@ -208,6 +215,9 @@ while test $# -gt 0; do
             ;;
         -A|--all)
             show_all=true
+            ;;
+        -r|--reverse)
+            additional_sort_flags="-r"
             ;;
         --)
             shift
@@ -264,7 +274,7 @@ else
 fi
 
 if test "$create_commit" = "true"; then
-    target=$(print_candidates | show_menu)
+    target=$(print_candidates | sort_commits | show_menu)
     if test -z "$target"; then
         exit
     fi
@@ -273,5 +283,5 @@ if test "$create_commit" = "true"; then
         call_rebase "${target%% *}"
     fi
 else
-    print_candidates
+    print_candidates | sort_commits
 fi
