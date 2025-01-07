@@ -276,6 +276,8 @@ The fine people who have contributed to this script in ASCIIbetical order.
 - Federico del Mazo ([FdelMazo](https://github.com/FdelMazo))
 - Gustavo Sousa ([guludo](https://github.com/guludo))
 - Joe Shaw ([joeshaw](https://github.com/joeshaw))
+- Martin Imre ([mimre25](https://github.com/mimre25))
+- Matěj Cepl ([mcepl](https://github.com/mcepl))
 - Philippe ([pe](https://github.com/pe))
 - Rickard Dybeck ([alde](https://github.com/alde))
 - Tiago Ribeiro ([fixe](https://github.com/fixe))
