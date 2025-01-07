@@ -158,6 +158,17 @@ Or `GITFIXUPBASE`
 The default argument for `--base`. You can set the value `closest` to make
 `git-fixup` use the closest ancestor branch by default, for example.
 
+### fixup.format
+
+Or `GITFIXUPFORMAT`
+
+The format string used to display fixup candidates. This is passed to `git log`
+and as such supports the same format options as git itself with one minor
+alteration: The string 'TYPE' is replaced by the source of the candidate, 'F'
+for file, or 'L' for line.
+
+Refer to the git manual for details.
+
 ### fixup.action
 
 Or `GITFIXUPACTION`

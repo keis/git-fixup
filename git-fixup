@@ -69,8 +69,18 @@ fixup_candidates_all_commits () {
 print_sha () {
     local sha=$1
     local type=$2
+    local format=''
 
-    git --no-pager log --format="%h %ai [$type] %s <%ae>" -n 1 "$sha"
+    case "$type" in
+        F)
+            format="$formatf"
+            ;;
+        L)
+            format="$formatl"
+            ;;
+    esac
+
+    git --no-pager log --format="$format" -n 1 "$sha"
 }
 
 # Call git commit
@@ -167,7 +177,7 @@ show_menu () {
 
 sort_commits () {
     # shellcheck disable=SC2086
-    sort $sort_flags $additional_sort_flags
+    sort -k2 $additional_sort_flags
 }
 
 git_commit_args=()
@@ -178,8 +188,11 @@ fixup_menu=${GITFIXUPMENU:-$(git config --default="" fixup.menu)}
 create_commit=${GITFIXUPCOMMIT:-$(git config --default=false --type bool fixup.commit)}
 base=${GITFIXUPBASE:-$(git config --default="" fixup.base)}
 show_all=false
-sort_flags="-k2 -k3 -k4" # default flags to sort by time (eg 2025-01-03 10:04:43 +0100, hence 3 fields)
 additional_sort_flags=${GITFIXUPADDITIONALSORTFLAGS:-$(git config --default="" fixup.additionalSortFlags)}
+format=${GITFIXUPFORMAT:-$(git config --default "%h %ai [TYPE] %s <%ae>" fixup.format)}
+formatf=$(echo "$format" | sed 's/TYPE/F/g')
+formatl=$(echo "$format" | sed 's/TYPE/L/g')
+
 while test $# -gt 0; do
     case "$1" in
         -s|--squash)
